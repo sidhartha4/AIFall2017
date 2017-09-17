@@ -53,22 +53,29 @@ void print(char b[SZN][SZN]) {
 
 
 void a_star() {
-    memset(dist, 0, sizeof(dist));
+    memset(dist, 0x3f, sizeof(dist));
+    d[num][0] = 0;
     pq.push(make_pair(0, state(num, 0)));
     int idx, bitmask, nb;
     while (pq.size()) {
         idx = pq.top().y.idx;
         bitmask = pq.top().y.b;
+#ifdef debug
         cout << idx << " " << bitset<20>(bitmask) << "\n";
+#endif
         if (bitmask == (1<<num)-1) break;
+        if (pq.top().x > dist[idx][bitmask]) {
+            pq.pop();
+            continue;
+        }
         pq.pop();
         for (int i = 0; i < num; ++i) {
-            if (!(bitmask & i)) {
-                nb = bitmask | i;
+            if (!(bitmask & (1<<i))) {
+                nb = bitmask | (1<<i);
                 d[i][nb] = dis[idx][i] + d[idx][bitmask];
                 par[i][nb] = make_pair(idx, bitmask);
                 for (int j = 0; j < shortest[i].size(); ++j) {
-                    if (shortest[i][j].x == num || (nb & shortest[i][j].x)) continue;
+                    if (shortest[i][j].y == num || (nb & (1<<shortest[i][j].y))) continue;
                     pq.push(make_pair(d[idx][bitmask] + d[i][nb] + shortest[i][j].x, state(i, nb)));
                     break;
                 }
@@ -76,6 +83,7 @@ void a_star() {
         }
     }
     memcpy(sol, board, sizeof(sol));
+    int tmp;
     char cur = 'a' + num;
     while (bitmask) {
         sol[v[idx].x][v[idx].y] = cur;
