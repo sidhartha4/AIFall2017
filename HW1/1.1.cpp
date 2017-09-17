@@ -150,10 +150,8 @@ void greedy() {
 }
 
 void a_star() {
-    memset(visited, 0, sizeof(visited));
     memset(dist, 0, sizeof(dist));
     pq.push(make_pair(0, make_pair(stx, sty)));
-    visited[stx][sty] = 1;
     int pushed = 1, popped = 0, x, y, nx, ny;
     while (pq.size()) {
         x = pq.top().y.x;
@@ -163,8 +161,7 @@ void a_star() {
         pq.pop();
         for (int i = 0; i < 4; ++i) {
             nx = x+dx[i], ny = y+dy[i];
-            if (board[nx][ny] != '%' && !visited[nx][ny]) {
-                visited[nx][ny] = 1;
+            if (board[nx][ny] != '%') {
                 dist[nx][ny] = 1+dist[x][y];
                 ++pushed;
                 pq.push(make_pair(dist[nx][ny] + abs(enx - nx) + abs(eny - ny), make_pair(nx, ny)));
