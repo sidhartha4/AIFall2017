@@ -17,6 +17,7 @@ typedef pair<int,int> PII;
 
 const int dx[] = {-1, 1, 0, 0};
 const int dy[] = {0, 0, -1, 1};
+const int BITS = 12;
 
 struct state {
     int idx, b;
@@ -48,39 +49,66 @@ void print(char b[SZN][SZN]) {
 
 
 void a_star() {
-    memset(dist, 0x3f, sizeof(dist));
+    memset(d, 0x3f, sizeof(d));
     d[num][0] = 0;
     pq.push(make_pair(0, state(num, 0)));
-    int idx, bitmask, nb;
+    int idx, bitmask, nb, expand = 0;
     while (pq.size()) {
+        ++expand;
         idx = pq.top().y.idx;
         bitmask = pq.top().y.b;
-#ifdef debug
-        cout << idx << " " << bitset<20>(bitmask) << "\n";
-#endif
         if (bitmask == (1<<num)-1) break;
-        if (pq.top().x > dist[idx][bitmask]) {
+        /*
+        if (pq.top().x > d[idx][bitmask]) {
             pq.pop();
             continue;
-        }
+        } 
+        */
         pq.pop();
+#ifdef debug
+        cout << d[idx][bitmask] << " " << idx << " " << bitset<BITS>(bitmask) << "\n";
+#endif
         for (int i = 0; i < num; ++i) {
             if (!(bitmask & (1<<i))) {
                 nb = bitmask | (1<<i);
-                d[i][nb] = dis[idx][i] + d[idx][bitmask];
-                par[i][nb] = make_pair(idx, bitmask);
+                if (d[i][nb] > dis[idx][i] + d[idx][bitmask]) {
+                    d[i][nb] = dis[idx][i] + d[idx][bitmask];
+                    par[i][nb] = make_pair(idx, bitmask);
+                    for (int j = 0; j < shortest[i].size(); ++j) {
+                        if (shortest[i][j].y == num || (nb & (1<<shortest[i][j].y))) continue;
+#ifdef debug
+                        cout << "push " << d[i][nb] + shortest[i][j].x << " " << i << " " 
+                            << bitset<BITS>(nb) << "\n";
+#endif
+                        pq.push(make_pair(d[i][nb] + shortest[i][j].x, state(i, nb)));
+                        break;
+                    }
+                    /*
+                    pq.push(make_pair(d[i][nb], state(i, nb)));
+#ifdef debug
+                    cout << "push " << d[i][nb] << " " << i << " " << bitset<BITS>(nb) << "\n";
+#endif
+*/
+                }
+                /*
                 for (int j = 0; j < shortest[i].size(); ++j) {
                     if (shortest[i][j].y == num || (nb & (1<<shortest[i][j].y))) continue;
-                    pq.push(make_pair(d[idx][bitmask] + d[i][nb] + shortest[i][j].x, 
+#ifdef debug
+                    cout << "push " << d[idx][bitmask] + dis[idx][i] + shortest[i][j].x << " " << i << " " << bitset<BITS>(nb) << "\n";
+#endif
+                    pq.push(make_pair(d[idx][bitmask] + dis[idx][i] + shortest[i][j].x, 
                                 state(i, nb)));
                     break;
                 }
+                */
             }
         }
     }
     memcpy(sol, board, sizeof(sol));
     int tmp;
     char cur = 'a' + num;
+    cout << "distance: " << d[idx][bitmask] << "\n";
+    cout << "expanded: " << expand << "\n";
     while (bitmask) {
         sol[v[idx].x][v[idx].y] = cur;
         tmp = par[idx][bitmask].x;
@@ -88,8 +116,8 @@ void a_star() {
         idx = tmp;
         --cur;
     }
+    sol[v[idx].x][v[idx].y] = cur;
     print(sol);
-    cout << d[idx][bitmask] << "\n";
 }
 
 void find_dist() {
