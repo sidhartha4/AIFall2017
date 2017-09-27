@@ -9,7 +9,7 @@ using namespace std;
 
 #define x first
 #define y second
-#define SZN 105
+#define SZN 111
 #define MXN 1111111
 #define debug
 
@@ -29,18 +29,13 @@ struct state {
 };
 
 short n, m, stx, sty, num;
-char board[SZN][SZN];
-char sol[SZN][SZN];
-pair<short, int> par[25][MXN];
-short d[25][MXN];
 priority_queue<pair<int, state>, vector<pair<int, state> >, greater<pair<int, state> > > pq;
+char board[SZN][SZN], sol[SZN][SZN];
+pair<short, int> par[25][MXN];
 // bfs for all pairs shortest path
+short dist[SZN][SZN], idx[SZN][SZN], dis[25][25], d[25][MXN];
 bool visited[SZN][SZN];
-short dist[SZN][SZN];
-short idx[SZN][SZN];
-short dis[25][25];
-vector<PII> v;
-vector<PII> shortest[25];
+vector<PII> v, shortest[25];
 
 
 void print(char b[SZN][SZN]) {
@@ -76,7 +71,8 @@ void a_star() {
                 par[i][nb] = make_pair(idx, bitmask);
                 for (int j = 0; j < shortest[i].size(); ++j) {
                     if (shortest[i][j].y == num || (nb & (1<<shortest[i][j].y))) continue;
-                    pq.push(make_pair(d[idx][bitmask] + d[i][nb] + shortest[i][j].x, state(i, nb)));
+                    pq.push(make_pair(d[idx][bitmask] + d[i][nb] + shortest[i][j].x, 
+                                state(i, nb)));
                     break;
                 }
             }
