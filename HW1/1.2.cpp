@@ -11,7 +11,7 @@ using namespace std;
 #define y second
 #define SZN 111
 #define MXN 1111111
-#define debug
+// #define debug
 
 typedef pair<int,int> PII;
 
@@ -54,16 +54,14 @@ void a_star() {
     pq.push(make_pair(0, state(num, 0)));
     int idx, bitmask, nb, expand = 0;
     while (pq.size()) {
-        ++expand;
         idx = pq.top().y.idx;
         bitmask = pq.top().y.b;
         if (bitmask == (1<<num)-1) break;
-        /*
         if (pq.top().x > d[idx][bitmask]) {
             pq.pop();
             continue;
         } 
-        */
+        ++expand;
         pq.pop();
 #ifdef debug
         cout << d[idx][bitmask] << " " << idx << " " << bitset<BITS>(bitmask) << "\n";
@@ -74,6 +72,7 @@ void a_star() {
                 if (d[i][nb] > dis[idx][i] + d[idx][bitmask]) {
                     d[i][nb] = dis[idx][i] + d[idx][bitmask];
                     par[i][nb] = make_pair(idx, bitmask);
+                    /*
                     for (int j = 0; j < shortest[i].size(); ++j) {
                         if (shortest[i][j].y == num || (nb & (1<<shortest[i][j].y))) continue;
 #ifdef debug
@@ -83,12 +82,11 @@ void a_star() {
                         pq.push(make_pair(d[i][nb] + shortest[i][j].x, state(i, nb)));
                         break;
                     }
-                    /*
+                    */
                     pq.push(make_pair(d[i][nb], state(i, nb)));
 #ifdef debug
                     cout << "push " << d[i][nb] << " " << i << " " << bitset<BITS>(nb) << "\n";
 #endif
-*/
                 }
                 /*
                 for (int j = 0; j < shortest[i].size(); ++j) {
