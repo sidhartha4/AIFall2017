@@ -27,6 +27,7 @@ stack<PII> s;
 priority_queue<pair<int, PII>, vector<pair<int, PII> >, greater<pair<int, PII> > > pq;
 
 
+// print board
 void print(char b[SZN][SZN]) {
     for (int i = 1; i < n; ++i) {
         for (int j = 1; j <= m; ++j)
@@ -35,6 +36,7 @@ void print(char b[SZN][SZN]) {
     }
 }
 
+// bfs
 void bfs() {
     memset(visited, 0, sizeof(visited));
     memset(dist, 0, sizeof(dist));
@@ -73,6 +75,7 @@ void bfs() {
     cout << "\n";
 }
 
+// dfs
 void dfs() {
     memset(visited, 0, sizeof(visited));
     memset(dist, 0, sizeof(dist));
@@ -111,6 +114,7 @@ void dfs() {
     cout << "\n";
 }
 
+// greedy best first search with manhattan distance
 void greedy() {
     memset(visited, 0, sizeof(visited));
     memset(dist, 0, sizeof(dist));
@@ -149,6 +153,7 @@ void greedy() {
     cout << "\n";
 }
 
+// a* with manhattan distance
 void a_star() {
     memset(dist, 0, sizeof(dist));
     pq.push(make_pair(0, make_pair(stx, sty)));

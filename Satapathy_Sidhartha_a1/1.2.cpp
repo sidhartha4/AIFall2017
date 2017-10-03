@@ -39,6 +39,7 @@ bool visited[SZN][SZN];
 vector<PII> v, shortest[25];
 
 
+// print board
 void print(char b[SZN][SZN]) {
     for (int i = 1; i < n; ++i) {
         for (int j = 1; j <= m; ++j)
@@ -47,7 +48,7 @@ void print(char b[SZN][SZN]) {
     }
 }
 
-
+// a* with heuristic described in report
 void a_star() {
     memset(d, 0x3f, sizeof(d));
     d[num][0] = 0;
@@ -72,33 +73,11 @@ void a_star() {
                 if (d[i][nb] > dis[idx][i] + d[idx][bitmask]) {
                     d[i][nb] = dis[idx][i] + d[idx][bitmask];
                     par[i][nb] = make_pair(idx, bitmask);
-                    /*
-                    for (int j = 0; j < shortest[i].size(); ++j) {
-                        if (shortest[i][j].y == num || (nb & (1<<shortest[i][j].y))) continue;
-#ifdef debug
-                        cout << "push " << d[i][nb] + shortest[i][j].x << " " << i << " " 
-                            << bitset<BITS>(nb) << "\n";
-#endif
-                        pq.push(make_pair(d[i][nb] + shortest[i][j].x, state(i, nb)));
-                        break;
-                    }
-                    */
                     pq.push(make_pair(d[i][nb], state(i, nb)));
 #ifdef debug
                     cout << "push " << d[i][nb] << " " << i << " " << bitset<BITS>(nb) << "\n";
 #endif
                 }
-                /*
-                for (int j = 0; j < shortest[i].size(); ++j) {
-                    if (shortest[i][j].y == num || (nb & (1<<shortest[i][j].y))) continue;
-#ifdef debug
-                    cout << "push " << d[idx][bitmask] + dis[idx][i] + shortest[i][j].x << " " << i << " " << bitset<BITS>(nb) << "\n";
-#endif
-                    pq.push(make_pair(d[idx][bitmask] + dis[idx][i] + shortest[i][j].x, 
-                                state(i, nb)));
-                    break;
-                }
-                */
             }
         }
     }
@@ -118,6 +97,7 @@ void a_star() {
     print(sol);
 }
 
+// find all pairs shortest paths
 void find_dist() {
     int x, y, nx, ny;
     queue<PII> q;
