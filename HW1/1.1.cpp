@@ -155,7 +155,8 @@ void greedy() {
 
 // a* with manhattan distance
 void a_star() {
-    memset(dist, 0, sizeof(dist));
+    memset(dist, 0x3f, sizeof(dist));
+    dist[stx][sty] = 0;
     pq.push(make_pair(0, make_pair(stx, sty)));
     int pushed = 1, popped = 0, x, y, nx, ny;
     while (pq.size()) {
@@ -166,7 +167,7 @@ void a_star() {
         pq.pop();
         for (int i = 0; i < 4; ++i) {
             nx = x+dx[i], ny = y+dy[i];
-            if (board[nx][ny] != '%') {
+            if (board[nx][ny] != '%' && dist[nx][ny] > 1+dist[x][y]) {
                 dist[nx][ny] = 1+dist[x][y];
                 ++pushed;
                 pq.push(make_pair(dist[nx][ny] + abs(enx - nx) + abs(eny - ny), make_pair(nx, ny)));
