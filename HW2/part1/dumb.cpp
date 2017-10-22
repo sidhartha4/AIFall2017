@@ -5,7 +5,7 @@
 using namespace std;
 
 #define SZN 15
-#define CZN 10
+#define CZN 15
 // #define debug
 
 const int dx[] = {-1, 0, 1, 0};
