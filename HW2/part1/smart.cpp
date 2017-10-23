@@ -4,12 +4,15 @@
 #include <cassert>
 #include <queue>
 #include <ctime>
+#include <cstring>
+#include <cmath>
+#include <algorithm>
 
 using namespace std;
 
 #define SZN 20
 #define CZN 15
-#define debug
+// #define debug
 #define x first
 #define y second
 
@@ -20,16 +23,18 @@ const int dx[] = {-1, 0, 1, 0};
 const int dy[] = {0, -1, 0, 1};
 
 
-int n, c, m;
+int n, c, m, steps;
 int bij[300], stx[CZN], sty[CZN], enx[CZN], eny[CZN];
 int cstx[CZN], csty[CZN], cenx[CZN], ceny[CZN];
 char b[SZN][SZN]; // use char because easier to code
 char rev[CZN], crev[SZN];
 bool done;
-int visited[SZN][SZN];
+int visited[SZN][SZN], cnt[CZN];
+clock_t begin, end;
 queue<PII> q;
 vector<PII> ord;
 
+// debug print output
 void print() {
     for (int i = 0; i <= n+1; ++i) {
         for (int j = 0; j <= m+1; ++j) {
@@ -41,6 +46,7 @@ void print() {
     cout.flush();
 }
 
+// check for no zigzags
 bool check(int x, int y) {
     assert(b[x][y] && b[x][y] != '#');
     int cx, cy, nx, ny, cnt;
@@ -63,7 +69,7 @@ bool check(int x, int y) {
 bool forward_check(int cx, int cy, int col) {
     memset(visited, 0, sizeof(visited));
     while (q.size()) q.pop();
-    int x, y, nx, ny, cnt;
+    int x, y, nx, ny, tmp;
     bool good;
     // check if there exists path for remaining colors
     for (int i = col; i <= c; ++i) {
@@ -100,10 +106,13 @@ bool forward_check(int cx, int cy, int col) {
     for (int i = 1; i <= n; ++i) {
         for (int j = 1; j <= m; ++j) {
             if (!b[i][j] && !visited[i][j]) {
+                good = 0;
+                memset(cnt, 0, sizeof(cnt));
                 q.push(make_pair(i, j));
                 visited[i][j] = 1;
                 visited[cx][cy] = visited[enx[col]][eny[col]] = 0;
-                cnt = good = 0;
+                for (int k = col+1; k <= c; ++k) 
+                    visited[stx[k]][sty[k]] = visited[enx[k]][eny[k]] = 0;
                 while (q.size()) {
                     x = q.front().x;
                     y = q.front().y;
@@ -113,16 +122,46 @@ bool forward_check(int cx, int cy, int col) {
                         if (!b[nx][ny] && !visited[nx][ny]) {
                             visited[nx][ny] = 1;
                             q.push(make_pair(nx, ny));
-                        } else if (bij[b[nx][ny]] > col) {
-                            good = 1;
-                        } else if (((nx == cx && ny == cy) || (nx == enx[col] && ny == eny[col])) && !visited[nx][ny]) {
-                            ++cnt;
-                            visited[nx][ny] = 1;
+                        } else if (bij[b[nx][ny]] >= col && !visited[nx][ny]) {
+                            tmp = bij[b[nx][ny]];
+                            if ((tmp != col && nx == stx[tmp] && ny == sty[tmp]) ||
+                                    (nx == enx[tmp] && ny == eny[tmp]) ||
+                                    (tmp == col && nx == cx && ny == cy)) {
+                                cnt[tmp]++;
+                                visited[nx][ny] = 1;
+                            }
                         }
                     }
                 }
-                if (!good && cnt != 2) return 0;
+
+                for (int k = 0; k < 4; ++k) {
+                    nx = cx+dx[k], ny = cy+dy[k];
+                    if (nx == enx[col] && ny == eny[col]) 
+                        cnt[col] = 0;
+                }
+                for (int k = col; k <= c; ++k) 
+                    if (cnt[k] == 2) good = 1;
+                for (int k = col; k <= c; ++k) 
+                    if (cnt[k] && cnt[k] != 2 && !good) 
+                        return 0;
+                good = 0;
+                for (int k = col; k <= c; ++k) 
+                    if (cnt[k]) good = 1;
+                if (!good) return 0;
             }
+        }
+    }
+
+    // check C shapes (empty space surrounded by >= 3 of same type)
+    for (int i = 0; i < 4; ++i) {
+        x = cx+dx[i], y = cy+dy[i];
+        if (!b[x][y]) {
+            tmp = 0;
+            for (int k = 0; k < 4; ++k) {
+                nx = x+dx[k], ny = y+dy[k];
+                if (b[nx][ny] == b[cx][cy]) ++tmp;
+            }
+            if (tmp >= 3) return 0;
         }
     }
 
@@ -135,7 +174,7 @@ void dfs(int x, int y, int col, int lft) {
     cout << x << " " << y << " " << col << " " << lft << "\n";
     print();
 #endif
-    if (done) return;
+    ++steps;
     if (!lft) {
         assert(col == c);
         for (int i = 1; i <= n; ++i) {
@@ -146,7 +185,12 @@ void dfs(int x, int y, int col, int lft) {
             cout << "\n";
         }
         done = 1;
-        return;
+        end = clock();
+        double duration = (double) (end - begin) / CLOCKS_PER_SEC;
+        cout << "\nelasped time: " << duration << " seconds\n";
+        cout << "assignments: " << steps << "\n";
+
+        exit(0);
     }
     if (col == c+1) return;
 
@@ -161,14 +205,14 @@ void dfs(int x, int y, int col, int lft) {
             b[nx][ny] = 0;
         } else if (nx == enx[col] && ny == eny[col]) {
             // at end
-            if (check(nx, ny) && forward_check(nx, ny, col))
+            if (check(nx, ny) && forward_check(stx[col+1], sty[col+1], col+1))
                 dfs(stx[col+1], sty[col+1], col+1, lft);
         }
     }
 }
 
 int main() {
-    clock_t begin = clock();
+    begin = clock();
     n = c = 0;
     memset(b, '#', sizeof(b));
 
@@ -210,10 +254,6 @@ int main() {
 
     dfs(stx[1], sty[1], 1, n*m-2*c);
     assert(done);
-
-    clock_t end = clock();
-    double duration = (double) (end - begin) / CLOCKS_PER_SEC;
-    cout << "\nelasped time: " << duration << "\n";
 
     return 0;
 }
