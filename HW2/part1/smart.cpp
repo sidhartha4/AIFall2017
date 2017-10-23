@@ -1,3 +1,4 @@
+/* Compile with g++ -Wall -O2 smart.cpp */
 #include <iostream>
 #include <vector>
 #include <cassert>
@@ -8,7 +9,7 @@ using namespace std;
 
 #define SZN 15
 #define CZN 15
-#define debug
+// #define debug
 #define x first
 #define y second
 
@@ -101,6 +102,7 @@ bool forward_check(int cx, int cy, int col) {
             if (!b[i][j] && !visited[i][j]) {
                 q.push(make_pair(i, j));
                 visited[i][j] = 1;
+                visited[cx][cy] = visited[enx[col]][eny[col]] = 0;
                 cnt = good = 0;
                 while (q.size()) {
                     x = q.front().x;
@@ -111,12 +113,9 @@ bool forward_check(int cx, int cy, int col) {
                         if (!b[nx][ny] && !visited[nx][ny]) {
                             visited[nx][ny] = 1;
                             q.push(make_pair(nx, ny));
-                        } else if (bij[b[nx][ny]] >= col) {
+                        } else if (bij[b[nx][ny]] > col) {
                             good = 1;
-                        } else if (nx == cx && ny == cy && !visited[nx][ny]) {
-                            ++cnt;
-                            visited[nx][ny] = 1;
-                        } else if (nx == enx[col-1] && ny == eny[col-1] && !visited[nx][ny]) {
+                        } else if (((nx == cx && ny == cy) || (nx == enx[col] && ny == eny[col])) && !visited[nx][ny]) {
                             ++cnt;
                             visited[nx][ny] = 1;
                         }
