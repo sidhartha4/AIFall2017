@@ -162,18 +162,47 @@ bool forward_check(int cx, int cy, int col) {
                     if (nx != enx[col] || ny != eny[col]) ++tmp2;
                     ++tmp;
                 } else if (b[nx][ny]) {
-                    if (b[nx][ny] == '#' || bij[b[nx][ny]] < col) {
+                    if (b[nx][ny] == '#' || bij[b[nx][ny]] < col) 
                         ++tmp3;
-                    }
                 }
             }
-            if (tmp >= 3 || (tmp2 >= 2 && tmp3)) return 0;
+            if (tmp >= 3 || (tmp2 >= 2 && tmp3))
+                return 0;
         }
     }
 
     return 1;
 }
 
+bool check_bound(int cx, int cy, int col) {
+    int tmp, x, y, nx, ny;
+    for (int i = 0; i < 4; ++i) {
+        x = cx+dx[i], y = cy+dy[i];
+        if (!b[x][y]) {
+            tmp = 0;
+            for (int k = 0; k < 4; ++k) {
+                nx = x+dx[k], ny = y+dy[k];
+                if (b[nx][ny]) {
+                    if (b[nx][ny] == '#' || bij[b[nx][ny]] <= col) 
+                        ++tmp;
+                }
+            }
+            if (tmp >= 3) return 0;
+        }
+    }
+
+    return 1;
+}
+
+bool force(int x, int y, int col) {
+    int nx, ny, num = 0;
+    for (int i = 0; i < 4; ++i) {
+        nx = x+dx[i], ny = y+dy[i];
+        if (b[nx][ny] && (b[nx][ny] == '#' || bij[b[nx][ny]] <= col))
+            ++num;
+    }
+    return num >= 3;
+}
 
 void dfs(int x, int y, int col, int lft) {
 #ifdef debug
@@ -200,19 +229,29 @@ void dfs(int x, int y, int col, int lft) {
     }
     if (col == c+1) return;
 
-    int nx, ny;
+    int nx, ny, num = 0;
     for (int k = 0; k < 4 && !done; ++k) {
         nx = x+dx[k], ny = y+dy[k];
-        if (!b[nx][ny]) {
-            // empty spot, place same color
-            b[nx][ny] = rev[col];
-            if (check(nx, ny) && forward_check(nx, ny, col))
-                dfs(nx, ny, col, lft-1);
-            b[nx][ny] = 0;
-        } else if (nx == enx[col] && ny == eny[col]) {
-            // at end
-            if (check(nx, ny) && forward_check(stx[col+1], sty[col+1], col+1))
-                dfs(stx[col+1], sty[col+1], col+1, lft);
+        if (!b[nx][ny] && force(nx, ny, col)) ++num;
+    } 
+
+    if (num < 2) {
+        for (int k = 0; k < 4 && !done; ++k) {
+            nx = x+dx[k], ny = y+dy[k];
+            if (!num || (num == 1 && force(nx, ny, col))) {
+                if (!b[nx][ny]) {
+                    // empty spot, place same color
+                    b[nx][ny] = rev[col];
+                    if (check(nx, ny) && forward_check(nx, ny, col))
+                        dfs(nx, ny, col, lft-1);
+                    b[nx][ny] = 0;
+                } else if (nx == enx[col] && ny == eny[col]) {
+                    // at end
+                    if (check(nx, ny) && check_bound(nx, ny, col) && 
+                            forward_check(stx[col+1], sty[col+1], col+1))
+                        dfs(stx[col+1], sty[col+1], col+1, lft);
+                }
+            }
         }
     }
 }
