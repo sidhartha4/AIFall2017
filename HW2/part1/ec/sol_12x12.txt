@@ -11,5 +11,5 @@ RABBBBBBBBBR
 RAAAAAAAAAAR
 RRRRRRRRRRRR
 
-elasped time: 4.20569 seconds
-assignments: 434701
+elasped time: 0.950318 seconds
+assignments: 95369

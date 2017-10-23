@@ -69,7 +69,7 @@ bool check(int x, int y) {
 bool forward_check(int cx, int cy, int col) {
     memset(visited, 0, sizeof(visited));
     while (q.size()) q.pop();
-    int x, y, nx, ny, tmp;
+    int x, y, nx, ny, tmp, tmp2, tmp3;
     bool good;
     // check if there exists path for remaining colors
     for (int i = col; i <= c; ++i) {
@@ -156,12 +156,17 @@ bool forward_check(int cx, int cy, int col) {
     for (int i = 0; i < 4; ++i) {
         x = cx+dx[i], y = cy+dy[i];
         if (!b[x][y]) {
-            tmp = 0;
+            tmp = tmp2 = tmp3 = 0;
             for (int k = 0; k < 4; ++k) {
                 nx = x+dx[k], ny = y+dy[k];
-                if (b[nx][ny] == b[cx][cy]) ++tmp;
+                if (b[nx][ny] == b[cx][cy]) {
+                    if (nx != enx[col] || ny != eny[col]) ++tmp2;
+                    ++tmp;
+                } else if (b[nx][ny] == '#') {
+                    ++tmp3;
+                }
             }
-            if (tmp >= 3) return 0;
+            if (tmp >= 3 || (tmp2 >= 2 && tmp3)) return 0;
         }
     }
 
