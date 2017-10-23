@@ -1,6 +1,9 @@
 #include <iostream>
 #include <vector>
 #include <cassert>
+#include <ctime>
+#include <cstring>
+#include <cmath>
 
 using namespace std;
 
@@ -12,7 +15,7 @@ const int dx[] = {-1, 0, 1, 0};
 const int dy[] = {0, -1, 0, 1};
 
 
-int n, c, m;
+int n, c, m, steps;
 int bij[300], stx[CZN], sty[CZN], enx[CZN], eny[CZN];
 char b[SZN][SZN]; // use char because easier to code
 char rev[CZN];
@@ -54,6 +57,7 @@ void dfs(int x, int y, int col, int lft) {
     print();
 #endif
     if (done) return;
+    ++steps;
     if (!lft) {
         assert(col == c);
         for (int i = 1; i <= n; ++i) {
@@ -88,6 +92,7 @@ void dfs(int x, int y, int col, int lft) {
 int main() {
     n = c = 0;
     memset(b, '#', sizeof(b));
+    clock_t begin = clock();
 
     string s;
     while (cin >> s) {
@@ -114,6 +119,11 @@ int main() {
 #endif
     dfs(stx[1], sty[1], 1, n*m-2*c);
     assert(done);
+
+    clock_t end = clock();
+    double duration = (double) (end - begin) / CLOCKS_PER_SEC;
+    cout << "\nelasped time: " << duration << " seconds\n";
+    cout << "assignments: " << steps << "\n";
 
     return 0;
 }
