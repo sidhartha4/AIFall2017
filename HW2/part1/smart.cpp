@@ -43,7 +43,6 @@ void print() {
         cout << "\n";
     }
     cout << "\n";
-    cout.flush();
 }
 
 // check for no zigzags
@@ -162,8 +161,10 @@ bool forward_check(int cx, int cy, int col) {
                 if (b[nx][ny] == b[cx][cy]) {
                     if (nx != enx[col] || ny != eny[col]) ++tmp2;
                     ++tmp;
-                } else if (b[nx][ny] == '#') {
-                    ++tmp3;
+                } else if (b[nx][ny]) {
+                    if (b[nx][ny] == '#' || bij[b[nx][ny]] < col) {
+                        ++tmp3;
+                    }
                 }
             }
             if (tmp >= 3 || (tmp2 >= 2 && tmp3)) return 0;
