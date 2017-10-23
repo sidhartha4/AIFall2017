@@ -23,16 +23,21 @@ const int dx[] = {-1, 0, 1, 0};
 const int dy[] = {0, -1, 0, 1};
 
 
-int n, c, m, steps;
-int bij[300], stx[CZN], sty[CZN], enx[CZN], eny[CZN];
-int cstx[CZN], csty[CZN], cenx[CZN], ceny[CZN];
-char b[SZN][SZN]; // use char because easier to code
-char rev[CZN], crev[SZN];
 bool done;
-int visited[SZN][SZN], cnt[CZN];
-clock_t begin, end;
-queue<PII> q;
-vector<PII> ord;
+int n, c, m, steps;
+char b[SZN][SZN]; // use char because easier to code
+
+int bij[300], stx[CZN], sty[CZN], enx[CZN], eny[CZN]; // used for ordering
+int cstx[CZN], csty[CZN], cenx[CZN], ceny[CZN]; // used for ordering
+char rev[CZN], crev[SZN]; // used for ordering
+vector<PII> ord; // ordering
+
+int visited[SZN][SZN], cnt[CZN]; // bfs
+queue<PII> q; // bfs
+
+clock_t begin, end; // time
+
+
 
 // debug print output
 void print() {
@@ -65,6 +70,7 @@ bool check(int x, int y) {
     return 1;
 }
 
+// forward checking
 bool forward_check(int cx, int cy, int col) {
     memset(visited, 0, sizeof(visited));
     while (q.size()) q.pop();
@@ -174,6 +180,7 @@ bool forward_check(int cx, int cy, int col) {
     return 1;
 }
 
+// check for "deadends"
 bool check_bound(int cx, int cy, int col) {
     int tmp, x, y, nx, ny;
     for (int i = 0; i < 4; ++i) {
@@ -194,6 +201,7 @@ bool check_bound(int cx, int cy, int col) {
     return 1;
 }
 
+// check for force moves
 bool force(int x, int y, int col) {
     int nx, ny, num = 0;
     for (int i = 0; i < 4; ++i) {
@@ -204,6 +212,7 @@ bool force(int x, int y, int col) {
     return num >= 3;
 }
 
+// dfs with backtracking and forward checking
 void dfs(int x, int y, int col, int lft) {
 #ifdef debug
     cout << x << " " << y << " " << col << " " << lft << "\n";
@@ -293,7 +302,8 @@ int main() {
     for (int i = 1; i <= c; ++i) bij[rev[i]] = i;
 #ifdef debug
     for (int i = 1; i <= c; ++i) {
-        cout << bij[rev[i]] << " " << rev[i] << ": (" << stx[i] << "," << sty[i] << ") -> (" << enx[i] << "," << eny[i] << ")\n";
+        cout << bij[rev[i]] << " " << rev[i] << ": (" << 
+            stx[i] << "," << sty[i] << ") -> (" << enx[i] << "," << eny[i] << ")\n";
     }
 #endif
 
