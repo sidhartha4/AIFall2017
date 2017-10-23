@@ -7,9 +7,9 @@
 
 using namespace std;
 
-#define SZN 15
+#define SZN 20
 #define CZN 15
-// #define debug
+#define debug
 #define x first
 #define y second
 
