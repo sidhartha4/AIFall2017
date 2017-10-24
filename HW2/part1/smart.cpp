@@ -21,6 +21,8 @@ typedef pair<int,int> PII;
 // up, left, down, right
 const int dx[] = {-1, 0, 1, 0};
 const int dy[] = {0, -1, 0, 1};
+const int ddx[] = {-2, -2, -1, 0, 1, 1, 0, -1};
+const int ddy[] = {-1, 0, 1, 1, 0, -1, -2, -2};
 
 
 bool done;
@@ -35,7 +37,7 @@ vector<PII> ord; // ordering
 int visited[SZN][SZN], cnt[CZN]; // bfs
 queue<PII> q; // bfs
 
-clock_t begin, end; // time
+clock_t begt, endt; // time
 
 
 
@@ -70,6 +72,24 @@ bool check(int x, int y) {
     return 1;
 }
 
+bool square_helper(int i, int j, int col) {
+    if (i && i < n && j && j < m) {
+        if (!b[i][j] && !b[i][j+1] && !b[i+1][j] && !b[i+1][j+1]) {
+            int num = 0;
+            if (b[i-1][j] && bij[b[i-1][j]] <= col && b[i-1][j+1] && bij[b[i-1][j+1]] <= col) 
+                ++num;
+            if (b[i+2][j] && bij[b[i+2][j]] <= col && b[i+2][j+1] && bij[b[i+2][j+1]] <= col) 
+                ++num;
+            if (b[i][j-1] && bij[b[i][j-1]] <= col && b[i+1][j-1] && bij[b[i+1][j-1]] <= col) 
+                ++num;
+            if (b[i][j+2] && bij[b[i][j+2]] <= col && b[i+1][j+2] && bij[b[i+1][j+2]] <= col) 
+                ++num;
+            if (num >= 3) return 0;
+        }
+    }
+    return 1;
+}
+
 // forward checking
 bool forward_check(int cx, int cy, int col) {
     memset(visited, 0, sizeof(visited));
@@ -85,6 +105,7 @@ bool forward_check(int cx, int cy, int col) {
             q.push(make_pair(stx[i], sty[i]));
             visited[stx[i]][sty[i]] = i;
         }
+
         good = 0;
         while (!good && q.size()) {
             x = q.front().x;
@@ -149,6 +170,7 @@ bool forward_check(int cx, int cy, int col) {
                 for (int k = col; k <= c; ++k) 
                     if (cnt[k] && cnt[k] != 2 && !good) 
                         return 0;
+
                 good = 0;
                 for (int k = col; k <= c; ++k) 
                     if (cnt[k]) good = 1;
@@ -167,14 +189,18 @@ bool forward_check(int cx, int cy, int col) {
                 if (b[nx][ny] == b[cx][cy]) {
                     if (nx != enx[col] || ny != eny[col]) ++tmp2;
                     ++tmp;
-                } else if (b[nx][ny]) {
-                    if (b[nx][ny] == '#' || bij[b[nx][ny]] < col) 
-                        ++tmp3;
-                }
+                } else if (b[nx][ny] && bij[b[nx][ny]] < col) 
+                    ++tmp3;
             }
             if (tmp >= 3 || (tmp2 >= 2 && tmp3))
                 return 0;
         }
+    }
+
+    // check square spots
+    for (int k = 0; k < 8; ++k) {
+        nx = cx+ddx[k], ny = cy+ddy[k];
+        if (!square_helper(nx, ny, col)) return 0;
     }
 
     return 1;
@@ -189,10 +215,8 @@ bool check_bound(int cx, int cy, int col) {
             tmp = 0;
             for (int k = 0; k < 4; ++k) {
                 nx = x+dx[k], ny = y+dy[k];
-                if (b[nx][ny]) {
-                    if (b[nx][ny] == '#' || bij[b[nx][ny]] <= col) 
-                        ++tmp;
-                }
+                if (b[nx][ny] && bij[b[nx][ny]] <= col)
+                    ++tmp;
             }
             if (tmp >= 3) return 0;
         }
@@ -206,7 +230,7 @@ bool force(int x, int y, int col) {
     int nx, ny, num = 0;
     for (int i = 0; i < 4; ++i) {
         nx = x+dx[i], ny = y+dy[i];
-        if (b[nx][ny] && (b[nx][ny] == '#' || bij[b[nx][ny]] <= col))
+        if (b[nx][ny] && bij[b[nx][ny]] <= col)
             ++num;
     }
     return num >= 3;
@@ -229,8 +253,8 @@ void dfs(int x, int y, int col, int lft) {
             cout << "\n";
         }
         done = 1;
-        end = clock();
-        double duration = (double) (end - begin) / CLOCKS_PER_SEC;
+        endt = clock();
+        double duration = (double) (endt - begt) / CLOCKS_PER_SEC;
         cout << "\nelasped time: " << duration << " seconds\n";
         cout << "assignments: " << steps << "\n";
 
@@ -266,7 +290,7 @@ void dfs(int x, int y, int col, int lft) {
 }
 
 int main() {
-    begin = clock();
+    begt = clock();
     n = c = 0;
     memset(b, '#', sizeof(b));
 
