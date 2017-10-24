@@ -8,6 +8,10 @@ from heapq import heapify
 import random
 from copy import deepcopy
 
+from datetime import datetime
+
+
+
 def defensiveHeuristicOne(content, whoseMove):
 
 	val = 0
@@ -170,7 +174,7 @@ def printBoard(board):
 
 
 
-def alphaBeta(node, whoseMove, strategy, isMax, depth, totDepth):
+def alphaBeta(node, whoseMove, strategy, isMax, depth, totDepth, maxVal, minVal):
 
 
 	if depth == totDepth:
@@ -190,8 +194,7 @@ def alphaBeta(node, whoseMove, strategy, isMax, depth, totDepth):
 		
 		moveList = MovesPossibleToMake(node,whoseMove)
 
-		maxVal = -1000000
-		nodeStatus = None
+		nodeStatus = deepcopy(node)
 
 		newMove = deepcopy(whoseMove)
 
@@ -201,12 +204,14 @@ def alphaBeta(node, whoseMove, strategy, isMax, depth, totDepth):
 
 			nodeNew = deepcopy(i)
 
-			evalTot = miniMax(nodeNew, newMove, strategy, newMax, depth+1, totDepth)
+			evalTot = alphaBeta(nodeNew, newMove, strategy, newMax, depth+1, totDepth, maxVal, minVal)
 
 			if maxVal < evalTot[0]:
 				nodeStatus = i
 				maxVal = evalTot[0]
 
+			if evalTot[0] >= minVal:
+				break
 		#print(maxVal)
 
 		retTot = [maxVal, nodeStatus] 
@@ -216,8 +221,7 @@ def alphaBeta(node, whoseMove, strategy, isMax, depth, totDepth):
 
 		moveList = MovesPossibleToMake(node,whoseMove)
 
-		minVal = 1000000
-		nodeStatus = None
+		nodeStatus = deepcopy(node)
 
 		newMove = deepcopy(whoseMove)
 
@@ -227,11 +231,15 @@ def alphaBeta(node, whoseMove, strategy, isMax, depth, totDepth):
 
 			nodeNew = deepcopy(i)
 			
-			evalTot = miniMax(nodeNew, newMove, strategy, newMax, depth+1, totDepth)
+			evalTot = alphaBeta(nodeNew, newMove, strategy, newMax, depth+1, totDepth, maxVal, minVal)
 
 			if minVal > evalTot[0]:
 				nodeStatus = i
 				minVal = evalTot[0]
+
+			if evalTot[0] <= maxVal:
+				break
+
 
 		retTot = [minVal, nodeStatus] 
 		return retTot
@@ -342,15 +350,12 @@ def main(name):
 	node = [contentReal,pieces,pieces]
 
 	Player1 = "Off"
-	Player2 = "Def"
+	Player2 = "Off"
 
-	ka = 0
+	ka = 1
+	printBoard(node[0])
+
 	while 1:
-
-
-		print("move number :" + str(ka))
-		printBoard(node[0])
-
 
 
 		if node[1] != 0 and node[2] == 0:
@@ -398,12 +403,44 @@ def main(name):
 		depth = 0
 		totDepth = 3
 		isMax = 1
-		moveChange = miniMax(Currnode, whoseMove, strategy, isMax, depth, totDepth)
 
+		moveChange = None
+		delta = None
+
+		if whoseMove == 1:
+
+			t1 = datetime.now()
+			moveChange = miniMax(Currnode, whoseMove, strategy, isMax, depth, totDepth)
+			t2 = datetime.now()
+			delta = t2 - t1
+			
+
+		else:
+			
+			t1 = datetime.now()
+			moveChange = alphaBeta(node, whoseMove, strategy, isMax, depth, totDepth, -100000, 100000)
+			t2 = datetime.now()
+			delta = t2 - t1
+
+		node = moveChange[1]	
+
+		print("--------------------------------------------------------------------------------")
+
+		print("move number :" + str(ka))
+
+		if ka%2 == 0 and ka != 0:
+			print("Black move:")
+		elif ka%2 == 1:
+			print("White move:")
+			
+		printBoard(node[0])
 
 		print(moveChange)
 
-		node = moveChange[1]
+		print(delta)
+
+		print("-------------------------------------------------------------------------------")
+
 
 		if whoseMove == 1:
 			whoseMove = 2
