@@ -8,5 +8,5 @@ GKYYYYYPG
 GKKKKKKPG
 GGGGGGGGG
 
-elasped time: 0.000603 seconds
-assignments: 124
+elasped time: 0.000571 seconds
+assignments: 117

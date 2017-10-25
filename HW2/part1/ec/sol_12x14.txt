@@ -13,5 +13,5 @@ DDDDDDDDDORD
 DRRRRRRRRRRD
 DDDDDDDDDDDD
 
-elasped time: 146.281 seconds
-assignments: 9720999
+elasped time: 109.036 seconds
+assignments: 6869527

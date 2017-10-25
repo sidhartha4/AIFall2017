@@ -9,5 +9,5 @@ FNSNHSNHVF
 FNNNHHHHVF
 FFFFFFFFFF
 
-elasped time: 0.006926 seconds
-assignments: 1213
+elasped time: 0.006574 seconds
+assignments: 1144
