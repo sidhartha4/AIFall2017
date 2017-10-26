@@ -1,0 +1,10 @@
+GGGOOOO
+GBGGGYO
+GBBBRYO
+GYYYRYO
+GYRRRYO
+GYRYYYO
+GYYYOOO
+
+elasped time: 0.000637 seconds
+assignments: 518
