@@ -122,7 +122,7 @@ int main() {
 
     clock_t end = clock();
     double duration = (double) (end - begin) / CLOCKS_PER_SEC;
-    cout << "\nelasped time: " << duration << " seconds\n";
+    cout << "\nelapsed time: " << duration << " seconds\n";
     cout << "assignments: " << steps << "\n";
 
     return 0;

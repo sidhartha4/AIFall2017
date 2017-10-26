@@ -255,7 +255,7 @@ void dfs(int x, int y, int col, int lft) {
         done = 1;
         endt = clock();
         double duration = (double) (endt - begt) / CLOCKS_PER_SEC;
-        cout << "\nelasped time: " << duration << " seconds\n";
+        cout << "\nelapsed time: " << duration << " seconds\n";
         cout << "assignments: " << steps << "\n";
 
         exit(0);
