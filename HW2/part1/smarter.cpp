@@ -92,10 +92,35 @@ bool square_helper(int i, int j, int col) {
 
 // forward checking
 bool forward_check(int cx, int cy, int col) {
-    memset(visited, 0, sizeof(visited));
-    while (q.size()) q.pop();
     int x, y, nx, ny, tmp, tmp2, tmp3;
     bool good;
+
+    // check C shapes (empty space surrounded by >= 3 of same type)
+    for (int i = 0; i < 4; ++i) {
+        x = cx+dx[i], y = cy+dy[i];
+        if (!b[x][y]) {
+            tmp = tmp2 = tmp3 = 0;
+            for (int k = 0; k < 4; ++k) {
+                nx = x+dx[k], ny = y+dy[k];
+                if (b[nx][ny] == b[cx][cy]) {
+                    if (nx != enx[col] || ny != eny[col]) ++tmp2;
+                    ++tmp;
+                } else if (b[nx][ny] && bij[b[nx][ny]] < col) 
+                    ++tmp3;
+            }
+            if (tmp >= 3 || (tmp2 >= 2 && tmp3))
+                return 0;
+        }
+    }
+
+    // check square spots
+    for (int k = 0; k < 8; ++k) {
+        nx = cx+ddx[k], ny = cy+ddy[k];
+        if (!square_helper(nx, ny, col)) return 0;
+    }
+
+    memset(visited, 0, sizeof(visited));
+    while (q.size()) q.pop();
     // check if there exists path for remaining colors
     for (int i = col; i <= c; ++i) {
         if (i == col) {
@@ -177,30 +202,6 @@ bool forward_check(int cx, int cy, int col) {
                 if (!good) return 0;
             }
         }
-    }
-
-    // check C shapes (empty space surrounded by >= 3 of same type)
-    for (int i = 0; i < 4; ++i) {
-        x = cx+dx[i], y = cy+dy[i];
-        if (!b[x][y]) {
-            tmp = tmp2 = tmp3 = 0;
-            for (int k = 0; k < 4; ++k) {
-                nx = x+dx[k], ny = y+dy[k];
-                if (b[nx][ny] == b[cx][cy]) {
-                    if (nx != enx[col] || ny != eny[col]) ++tmp2;
-                    ++tmp;
-                } else if (b[nx][ny] && bij[b[nx][ny]] < col) 
-                    ++tmp3;
-            }
-            if (tmp >= 3 || (tmp2 >= 2 && tmp3))
-                return 0;
-        }
-    }
-
-    // check square spots
-    for (int k = 0; k < 8; ++k) {
-        nx = cx+ddx[k], ny = cy+ddy[k];
-        if (!square_helper(nx, ny, col)) return 0;
     }
 
     return 1;
