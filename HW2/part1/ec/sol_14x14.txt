@@ -13,5 +13,5 @@ GRQPRRRRRRRRKG
 GRRRRKKKKKKKKG
 GGGGGGGGGGGGGG
 
-elasped time: 991.227 seconds
+elapsed time: 998.133 seconds
 assignments: 38449388

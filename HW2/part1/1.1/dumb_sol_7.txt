@@ -6,5 +6,5 @@ GYRRRYO
 GYRYYYO
 GYYYOOO
 
-elasped time: 0.000954 seconds
+elapsed time: 0.00069 seconds
 assignments: 13080

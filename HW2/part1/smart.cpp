@@ -2,6 +2,7 @@
 #include <vector>
 #include <cassert>
 #include <queue>
+#include <cstring>
 
 using namespace std;
 

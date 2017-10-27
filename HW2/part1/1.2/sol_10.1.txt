@@ -9,5 +9,5 @@ PYPGBRRRRG
 PYPGBBBBBG
 PPPGGGGGGG
 
-elasped time: 0.040113 seconds
+elapsed time: 0.039925 seconds
 assignments: 4888

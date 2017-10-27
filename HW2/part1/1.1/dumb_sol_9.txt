@@ -8,5 +8,5 @@ GKYYYYYPG
 GKKKKKKPG
 GGGGGGGGG
 
-elasped time: 0.026218 seconds
+elapsed time: 0.02409 seconds
 assignments: 482191
