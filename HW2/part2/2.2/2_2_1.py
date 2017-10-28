@@ -535,11 +535,11 @@ def main(name):
 	while 1:
 
 
-		if node[1] != 0 and node[2] == 0:
+		if node[1] >= 3 and node[2] < 3:
 			print("White wins")
 			break
 
-		if node[1] == 0 and node[2] != 0:	
+		if node[1] < 3 and node[2] >= 3:	
 
 			print("Black wins")
 			break
@@ -549,22 +549,23 @@ def main(name):
 		flagCheck = 0
 		for i in matCheck:
 			if i == 1:
-				print("White wins")
-				flagCheck = 1
-				break
+				flagCheck = flagCheck + 1
+				
 
-		if flagCheck == 1:
+		if flagCheck >= 3:
+
+			print("White wins")
 			break
 
 		flagCheck = 0
 	
 		for i in matCheck2:
 			if i == 2:
-				print("Black wins")
-				flagCheck = 1
-				break
+				flagCheck = flagCheck + 1
+				
 
-		if flagCheck == 1:
+		if flagCheck >= 3:
+			print("Black wins")
 			break
 
 

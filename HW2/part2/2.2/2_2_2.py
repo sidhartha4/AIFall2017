@@ -42,13 +42,13 @@ def offensiveHeuristicOne(content, whoseMove):
 def defensiveHeuristicTwo(node, whoseMove):
 
 
-	valMatBlack = [[1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], \
-	[1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1],  [1, 1, 1, 1, 1, 1, 1, 1], \
-	[1, 1, 1, 1, 1, 1, 1, 1], [10, 10, 10, 10, 10, 10, 10, 10]]
+	valMatBlack = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], \
+	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], \
+	[10, 10, 10, 10, 10, 10, 10, 10,10, 10]]
 
-	valMatWhite = [[10, 10, 10, 10, 10, 10, 10, 10], [1, 1, 1, 1, 1, 1, 1, 1],  \
-	[1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], \
-	[1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1]]
+	valMatWhite = [[10, 10, 10, 10, 10, 10, 10, 10,10, 10],[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\
+	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1], \
+	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
 	
 
 	'''
@@ -588,7 +588,7 @@ def main(name):
 
 			t1 = datetime.now()
 			
-			moveChange = alphaBeta(Currnode, whoseMove, strategy, isMax, depth, totDepth, -100000, 100000)
+			moveChange = alphaBeta(Currnode, whoseMove, strategy, isMax, depth, totDepth+1, -100000, 100000)
 			#moveChange = miniMax(Currnode, whoseMove, strategy, isMax, depth, totDepth)
 			t2 = datetime.now()
 			delta = t2 - t1
@@ -597,7 +597,7 @@ def main(name):
 		else:
 			
 			t1 = datetime.now()
-			moveChange = alphaBeta(Currnode, whoseMove, strategy, isMax, depth, totDepth, -100000, 100000)
+			moveChange = alphaBeta(Currnode, whoseMove, strategy, isMax, depth, totDepth+1, -100000, 100000)
 			t2 = datetime.now()
 			delta = t2 - t1
 
@@ -636,4 +636,4 @@ def main(name):
 
 if __name__ == "__main__":
 	
-	main('input.txt')
+	main('input2.txt')
