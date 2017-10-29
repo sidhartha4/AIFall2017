@@ -532,6 +532,9 @@ def main(name):
 	ka = 1
 	printBoard(node[0])
 
+	filetoWrite = open('workfile2.txt', 'w')
+
+
 	while 1:
 
 
@@ -616,6 +619,14 @@ def main(name):
 
 		if node != None:	
 			printBoard(node[0])
+
+			for iaa in node[0]:
+				for jaa in iaa:
+					filetoWrite.write(str(jaa)+" ")
+				filetoWrite.write('\n')	
+
+			filetoWrite.write('\n')
+
 		else:
 			print(node)
 
@@ -633,6 +644,7 @@ def main(name):
 		
 		ka = ka + 1
 
+	filetoWrite.close()
 
 
 if __name__ == "__main__":

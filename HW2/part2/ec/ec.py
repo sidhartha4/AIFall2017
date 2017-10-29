@@ -57,13 +57,13 @@ def offensiveHeuristicOne(content, whoseMove):
 def defensiveHeuristicTwo(node, whoseMove):
 
 
-	valMatBlack = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], \
-	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], \
-	[10, 10, 10, 10, 10, 10, 10, 10,10, 10]]
+	valMatBlack = [[1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], \
+	[1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1],  [1, 1, 1, 1, 1, 1, 1, 1], \
+	[1, 1, 1, 1, 1, 1, 1, 1], [50, 50, 50, 50, 50, 50, 50, 50]]
 
-	valMatWhite = [[10, 10, 10, 10, 10, 10, 10, 10,10, 10],[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\
-	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1], \
-	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
+	valMatWhite = [[50, 50, 50, 50, 50, 50, 50, 50], [1, 1, 1, 1, 1, 1, 1, 1],  \
+	[1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], \
+	[1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1]]
 	
 
 	'''
@@ -97,10 +97,10 @@ def defensiveHeuristicTwo(node, whoseMove):
 		for col in row:
 			if i == 1 and whoseMove == 2:
 				if col == 1:
-					val = val - 100
+					val = val - 50
 			if i == len(content)-2 and whoseMove == 1:
 				if col == 2:
-					val = val - 100
+					val = val - 50
 
 			if col == 1 and whoseMove == 1:
 
@@ -205,16 +205,14 @@ def defensiveHeuristicTwo(node, whoseMove):
 
 def offensiveHeuristicTwo(node, whoseMove):
 
+	valMatBlack = [[1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], [2, 2, 2, 2, 2, 2, 2, 2], \
+	[2, 2, 2, 2, 2, 2, 2, 2], [3, 3, 3, 3, 3, 3, 3, 3],  [3, 3, 3, 3, 3, 3, 3, 3], \
+	[4, 4, 4, 4, 4, 4, 4, 4], [100, 100, 100, 100, 100, 100, 100, 100]]
 
-	valMatBlack = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], \
-	[2, 2, 2, 2, 2, 2, 2, 2, 2, 2], [2, 2, 2, 2, 2, 2, 2, 2, 2, 2], \
-	[100, 100, 100, 100, 100, 100, 100, 100, 100, 100]]
-
-	valMatWhite = [[100, 100, 100, 100, 100, 100, 100, 100, 100, 100],[2, 2, 2, 2, 2, 2, 2, 2, 2, 2],\
-	[2, 2, 2, 2, 2, 2, 2, 2, 2, 2], \
-	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
-
-
+	valMatWhite = [[100, 100, 100, 100, 100, 100, 100, 100], [4, 4, 4, 4, 4, 4, 4, 4],  \
+	[3, 3, 3, 3, 3, 3, 3, 3], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], \
+	[2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1]]
+	
 
 	'''
 	valMatBlack = [[5, 15, 15, 5, 5, 15, 15, 5], [2, 3, 3, 3, 3, 3, 3, 2], [4, 6, 6, 6, 6, 6, 6, 4], \
@@ -1018,8 +1016,6 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
 	#transpositionTabWhite.clear()
 	#transpositionTabBlack.clear()
 
-	filetoWrite = open('workfile3.txt', 'w')
-
 	while 1:
 
 
@@ -1066,7 +1062,7 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
 			strategy = Player2
 
 		depth = 0
-		totDepth = 4
+		totDepth = 3
 		totDepth2 = 3
 		isMax = 1
 
@@ -1118,14 +1114,6 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
 
 		if node != None:	
 			printBoard(node[0])
-
-
-			for iaa in node[0]:
-				for jaa in iaa:
-					filetoWrite.write(str(jaa)+" ")
-				filetoWrite.write('\n')	
-
-			filetoWrite.write('\n')			
 		else:
 			print(node)
 
@@ -1143,7 +1131,6 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
 		
 		ka = ka + 1
 
-	filetoWrite.close()
 
 
 if __name__ == "__main__":
@@ -1151,7 +1138,7 @@ if __name__ == "__main__":
 	Player1 = "Def2"
 	Player2 = "Off"
 	
-	main('input2.txt', Player1, Player2, "alphaB", "alphaB")
+	main('input.txt', Player1, Player2, "alphaB", "alphaB")
 
 	Player3 = "Off2"
 	Player4 = "Def"
