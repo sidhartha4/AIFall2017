@@ -7,5 +7,5 @@ YBBBBOQY
 YQQQQQQY
 YYYYYYYY
 
-elapsed time: 0.00077 seconds
+elapsed time: 0.000754 seconds
 assignments: 626
