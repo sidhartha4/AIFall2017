@@ -9,8 +9,23 @@ import random
 from copy import deepcopy
 
 from datetime import datetime
+from bisect import bisect
 
 
+'''
+
+
+Re-search and search speed 
+improvements are done with transposition tables, move ordering 
+(in order to provide better Alpha-Beta pruning), and Null
+Move Heuristic (speeds the Negamax algorithm by identifying 
+cutoffs, points in the game tree where the current position 
+is so good for the side to move that the best play by the other side would have avoided it).
+
+
+
+
+'''
 
 def defensiveHeuristicOne(content, whoseMove):
 
@@ -75,8 +90,6 @@ def defensiveHeuristicTwo(node, whoseMove):
 
 
 	i = 0
-
-
 
 
 	for row in content:
@@ -189,12 +202,155 @@ def defensiveHeuristicTwo(node, whoseMove):
 	val = val + random.random()
 	return val
 
-def offensiveHeuristicTwo(content, whoseMove):
+
+def offensiveHeuristicTwo(node, whoseMove):
+
+	valMatBlack = [[1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], [2, 2, 2, 2, 2, 2, 2, 2], \
+	[2, 2, 2, 2, 2, 2, 2, 2], [3, 3, 3, 3, 3, 3, 3, 3],  [3, 3, 3, 3, 3, 3, 3, 3], \
+	[4, 4, 4, 4, 4, 4, 4, 4], [10, 10, 10, 10, 10, 10, 10, 10]]
+
+	valMatWhite = [[10, 10, 10, 10, 10, 10, 10, 10], [4, 4, 4, 4, 4, 4, 4, 4],  \
+	[3, 3, 3, 3, 3, 3, 3, 3], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], \
+	[2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1]]
+	
+
+	'''
+	valMatBlack = [[5, 15, 15, 5, 5, 15, 15, 5], [2, 3, 3, 3, 3, 3, 3, 2], [4, 6, 6, 6, 6, 6, 6, 4], \
+	[7, 10, 10, 10, 10, 10, 10, 7], [11, 15, 15, 15, 15, 15, 15, 11],  [16, 21, 21, 21, 21, 21, 21, 16], \
+	[20, 28, 28, 28, 28, 28, 28, 20], [36, 36, 36, 36, 36, 36, 36, 36]]
+
+	valMatWhite = [[36, 36, 36, 36, 36, 36, 36, 36], [20, 28, 28, 28, 28, 28, 28, 20],  \
+	[16, 21, 21, 21, 21, 21, 21, 16], [11, 15, 15, 15, 15, 15, 15, 11], [7, 10, 10, 10, 10, 10, 10, 7], \
+	[4, 6, 6, 6, 6, 6, 6, 4], [2, 3, 3, 3, 3, 3, 3, 2],[5, 15, 15, 5, 5, 15, 15, 5]]
+	'''
 
 	val = 0
+	if whoseMove == 1:
+		#if node[1] > node[2]:
+			val = val + 4*(node[1] - node[2])
+
+	else:
+		#if node[2] > node[1]:
+			val = val + 4*(node[2] - node[1])
+
+	content = deepcopy(node[0])
+	newBoard = deepcopy(content)
+
+
+	i = 0
+
+
+	for row in content:
+		j = 0
+		for col in row:
+			if i == 1 and whoseMove == 2:
+				if col == 1:
+					val = val - 100
+			if i == len(content)-2 and whoseMove == 1:
+				if col == 2:
+					val = val - 100
+
+			if col == 1 and whoseMove == 1:
+
+				val2 = 0
+
+				if i+1 < len(content) and j+1 < len(row) and newBoard[i+1][j+1] == 1: 
+					val2 = val2+1
+
+				if i+1 < len(content) and j-1 >= 0 and newBoard[i+1][j-1] == 1: 
+					val2 = val2+1
+					
+				if i-1 >= 0 and j+1 < len(row)  and newBoard[i-1][j+1] == 2: 
+					val2 = val2-1
+				
+				if i-1 >= 0  and j-1 >= 0 and newBoard[i-1][j-1] == 2: 
+					val2 = val2-1
+				
+
+
+				val3 = 0
+					
+				if i-1 >= 0 and j+1 < len(row)  and newBoard[i-1][j+1] == 1: 
+					val3 = val3+0.25
+				
+				if i-1 >= 0  and j-1 >= 0 and newBoard[i-1][j-1] == 1: 
+					val3 = val3+0.25
+				
+				if i-1 >= 0 and newBoard[i-1][j] == 1: 
+					val3 = val3+0.25
+				
+				if i-2 >= 0  and j-1 >= 0 and newBoard[i-2][j-1] == 1: 
+					val3 = val3+0.25
+				
+				if i-2 >= 0 and j+1 < len(row)  and newBoard[i-2][j+1] == 1: 
+					val3 = val3+0.25
+				
+				if i-2 >= 0 and newBoard[i-2][j] == 1: 
+					val3 = val3+0.25
+				
+				val = val + val3	
+
+
+				if val2 > 0:
+					val = val + valMatWhite[i][j]*1.5
+				else:
+					val = val + valMatWhite[i][j]
+
+
+
+
+			elif col == 2 and whoseMove == 2:
+
+				val2 = 0
+
+				if i-1 >= 0 and j+1 < len(row) and newBoard[i-1][j+1] == 2: 
+					val2 = val2+1
+
+				if i-1 >= 0 and j-1 >= 0 and newBoard[i-1][j-1] == 2: 
+					val2 = val2+1
+					
+				if i+1 < len(content) and j+1 < len(row)  and newBoard[i+1][j+1] == 1: 
+					val2 = val2-1
+				
+				if i+1 < len(content) and j-1 >= 0 and newBoard[i+1][j-1] == 1: 
+					val2 = val2-1
+
+
+				val3 = 0
+					
+				if i+1 < len(content) and j+1 < len(row)  and newBoard[i+1][j+1] == 1: 
+					val3 = val3+0.25
+				
+				if i+1 < len(content)  and j-1 >= 0 and newBoard[i+1][j-1] == 1: 
+					val3 = val3+0.25
+				
+				if i+1 < len(content) and newBoard[i+1][j] == 1: 
+					val3 = val3+0.25
+				
+				if i+2 < len(content)  and j-1 >= 0 and newBoard[i+2][j-1] == 1: 
+					val3 = val3+0.25
+				
+				if i+2 < len(content) and j+1 < len(row)  and newBoard[i+2][j+1] == 1: 
+					val3 = val3+0.25
+				
+				if i+2 < len(content) and newBoard[i+2][j] == 1: 
+					val3 = val3+0.25
+				
+				val = val + val3	
+
+				
+				if val2 > 0:
+					val = val + valMatBlack[i][j]*1.5
+				else:
+					val = val + valMatBlack[i][j]
+
+			j = j+1
+		i = i+1
+
+	val = val + random.random()
 	return val
 
-def MovesPossibleToMake(node, whoseMove):
+def MovesPossibleToMake(node, whoseMove,strategy):
 
 	content = node[0]
 	whitePieces = node[1]
@@ -311,9 +467,42 @@ def MovesPossibleToMake(node, whoseMove):
 
 		i = i+1
 
+	#return moveList
 
+	finalList = []
+	scoreList = []
 
-	return moveList
+	ja = 0
+
+	for ia in moveList:
+
+		score = 0
+
+		if strategy == "Def" or strategy == "Def2":
+			score = defensiveHeuristicOne(node[0], whoseMove)
+		elif strategy == "Off" or strategy == "Off2":
+			score = offensiveHeuristicOne(node[0], whoseMove)
+		
+		score = -1*score
+
+		'''
+		elif strategy == "Def2":
+			score = defensiveHeuristicTwo(node, whoseMove)
+
+		elif strategy == "Off2":
+			score = offensiveHeuristicTwo(node, whoseMove)
+		'''
+
+		if ja != 0:
+			index = bisect(scoreList, score)
+			finalList.insert(index, ia)
+			scoreList = scoreList.insert(index,score)
+		else:
+			finalList.append(ia)
+			scoreList.append(score)
+		
+	
+	return finalList
 
 
 def printBoard(board):
@@ -334,7 +523,7 @@ def alphaBeta(node, whoseMove, strategy, isMax, depth, totDepth, maxVal, minVal)
 
 	if depth == totDepth:
 		
-		score = None
+		score = 0
 		
 		if strategy == "Def":
 			score = defensiveHeuristicOne(node[0], whoseMove)
@@ -343,6 +532,9 @@ def alphaBeta(node, whoseMove, strategy, isMax, depth, totDepth, maxVal, minVal)
 		
 		elif strategy == "Def2":
 			score = defensiveHeuristicTwo(node, whoseMove)
+
+		elif strategy == "Off2":
+			score = offensiveHeuristicTwo(node, whoseMove)
 
 		retTot = [score, node]
 
@@ -353,7 +545,7 @@ def alphaBeta(node, whoseMove, strategy, isMax, depth, totDepth, maxVal, minVal)
 	if isMax == 1:
 		
 		#print("yeah1")
-		moveList = MovesPossibleToMake(node,whoseMove)
+		moveList = MovesPossibleToMake(node,whoseMove,strategy)
 
 		nodeStatus = deepcopy(node)
 
@@ -388,7 +580,7 @@ def alphaBeta(node, whoseMove, strategy, isMax, depth, totDepth, maxVal, minVal)
 	else:
 
 		#print("yeah2")
-		moveList = MovesPossibleToMake(node,whoseMove)
+		moveList = MovesPossibleToMake(node,whoseMove,strategy)
 
 		nodeStatus = deepcopy(node)
 
@@ -428,14 +620,16 @@ def miniMax(node, whoseMove, strategy, isMax, depth, totDepth):
 
 
 	if depth == totDepth:
-		score = None
+		score = 0
 		if strategy == "Def":
 			score = defensiveHeuristicOne(node[0], whoseMove)
 		elif strategy == "Off":
 			score = offensiveHeuristicOne(node[0], whoseMove)
-
 		elif strategy == "Def2":
 			score = defensiveHeuristicTwo(node, whoseMove)
+		elif strategy == "Off2":
+			score = offensiveHeuristicTwo(node, whoseMove)
+
 
 		retTot = [score, node]
 
@@ -445,10 +639,10 @@ def miniMax(node, whoseMove, strategy, isMax, depth, totDepth):
 
 	if isMax == 1:
 		
-		moveList = MovesPossibleToMake(node,whoseMove)
+		moveList = MovesPossibleToMake(node,whoseMove,strategy)
 
 		maxVal = -1000000
-		nodeStatus = None
+		nodeStatus = deepcopy(node)
 
 		newMove = deepcopy(whoseMove)
 
@@ -471,10 +665,10 @@ def miniMax(node, whoseMove, strategy, isMax, depth, totDepth):
 
 	else:
 
-		moveList = MovesPossibleToMake(node,whoseMove)
+		moveList = MovesPossibleToMake(node,whoseMove,strategy)
 
 		minVal = 1000000
-		nodeStatus = None
+		nodeStatus = deepcopy(node)
 
 		newMove = deepcopy(whoseMove)
 
@@ -494,7 +688,7 @@ def miniMax(node, whoseMove, strategy, isMax, depth, totDepth):
 		return retTot
 
 
-def main(name):
+def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
 
 	with open(name) as f:
 		content = f.readlines()
@@ -526,11 +720,13 @@ def main(name):
 
 	node = [contentReal,pieces,pieces]
 
-	Player1 = "Def2"
-	Player2 = "Off"
 
 	ka = 1
 	printBoard(node[0])
+
+
+	transpositionTabWhite = dict()
+	transpositionTabBlack = dict()
 
 	while 1:
 
@@ -579,6 +775,7 @@ def main(name):
 
 		depth = 0
 		totDepth = 3
+		totDepth2 = 3
 		isMax = 1
 
 		moveChange = None
@@ -587,17 +784,31 @@ def main(name):
 		if whoseMove == 1:
 
 			t1 = datetime.now()
-			
-			moveChange = alphaBeta(Currnode, whoseMove, strategy, isMax, depth, totDepth, -100000, 100000)
-			#moveChange = miniMax(Currnode, whoseMove, strategy, isMax, depth, totDepth)
+
+			if Player1SearchType == "min":
+				#moveChange = alphaBeta(Currnode, whoseMove, strategy, isMax, depth, totDepth, -100000, 100000)
+				moveChange = miniMax(Currnode, whoseMove, strategy, isMax, depth, totDepth)
+			elif Player1SearchType == "alphaB":
+				moveChange = alphaBeta(Currnode, whoseMove, strategy, isMax, depth, totDepth, -100000, 100000)
+
 			t2 = datetime.now()
+
 			delta = t2 - t1
 			
 
 		else:
 			
 			t1 = datetime.now()
-			moveChange = alphaBeta(Currnode, whoseMove, strategy, isMax, depth, totDepth, -100000, 100000)
+
+
+			if Player2SearchType == "min":
+				#moveChange = alphaBeta(Currnode, whoseMove, strategy, isMax, depth, totDepth, -100000, 100000)
+				moveChange = miniMax(Currnode, whoseMove, strategy, isMax, depth, totDepth2)
+			elif Player2SearchType == "alphaB":
+				moveChange = alphaBeta(Currnode, whoseMove, strategy, isMax, depth, totDepth2, -100000, 100000)
+
+			#moveChange = alphaBeta(Currnode, whoseMove, strategy, isMax, depth, totDepth2, -100000, 100000)
+			
 			t2 = datetime.now()
 			delta = t2 - t1
 
@@ -635,5 +846,14 @@ def main(name):
 
 
 if __name__ == "__main__":
+
+	Player1 = "Def2"
+	Player2 = "Off"
 	
-	main('input.txt')
+	main('input.txt', Player1, Player2, "alphaB", "alphaB")
+
+	Player3 = "Off2"
+	Player4 = "Def"
+
+	#main('input.txt', Player3, Player4, "alphaB", "alphaB")
+	
