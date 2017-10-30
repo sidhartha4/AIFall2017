@@ -1,0 +1,226 @@
+Match1: Off vs Off
+move number :50
+------------------------------------Final Results-------------------------------------------
+A.
+White Player wins
+-----------------------------------------
+00000000
+00001010
+00000000
+00011000
+00000010
+00000000
+00001000
+00100000
+-----------------------------------------
+------------------------------------
+B.
+White Player
+Number of nodes expanded: 20041
+Black Player
+Number of nodes expanded: 8557
+------------------------------------
+C.
+White Player
+Average Number of nodes expanded per move: 435.673913043
+Average amount of time to make a move: 1.02623032609
+Black Player
+Average Number of nodes expanded per move: 190.155555556
+Average amount of time to make a move: 0.363388733333
+Total: 
+Average Number of nodes expanded per move: 314.263736264
+Average amount of time to make a move: 0.698451516484
+------------------------------------
+D.
+White captured 16 black pieces
+Black captured 9 white pieces
+Total Number of moves: 91
+------------------------------------Final Results-End------------------------------------------
+Match2: Off2 vs Def
+------------------------------------Final Results-------------------------------------------
+A.
+White Player wins
+-----------------------------------------
+20001200
+20020000
+22222202
+02022022
+01000000
+11111111
+01110111
+00000000
+-----------------------------------------
+------------------------------------
+B.
+White Player
+Number of nodes expanded: 9281
+Black Player
+Number of nodes expanded: 6475
+------------------------------------
+C.
+White Player
+Average Number of nodes expanded per move: 386.708333333
+Average amount of time to make a move: 2.28128920833
+Black Player
+Average Number of nodes expanded per move: 281.52173913
+Average amount of time to make a move: 0.724544347826
+Total: 
+Average Number of nodes expanded per move: 335.234042553
+Average amount of time to make a move: 1.51947789362
+------------------------------------
+D.
+White captured 0 black pieces
+Black captured 0 white pieces
+Total Number of moves: 47
+------------------------------------Final Results-End------------------------------------------
+Match3: Def2 vs Off
+move number :50
+------------------------------------Final Results-------------------------------------------
+A.
+White Player wins
+-----------------------------------------
+10200000
+02000010
+00002000
+00010000
+00000000
+00110110
+00111100
+00110010
+-----------------------------------------
+------------------------------------
+B.
+White Player
+Number of nodes expanded: 5517
+Black Player
+Number of nodes expanded: 6912
+------------------------------------
+C.
+White Player
+Average Number of nodes expanded per move: 172.40625
+Average amount of time to make a move: 1.023555875
+Black Player
+Average Number of nodes expanded per move: 222.967741935
+Average amount of time to make a move: 0.425653741935
+Total: 
+Average Number of nodes expanded per move: 197.285714286
+Average amount of time to make a move: 0.729350063492
+------------------------------------
+D.
+White captured 13 black pieces
+Black captured 2 white pieces
+Total Number of moves: 63
+------------------------------------Final Results-End------------------------------------------
+Match4: Off2 vs Off
+------------------------------------Final Results-------------------------------------------
+A.
+White Player wins
+-----------------------------------------
+10220002
+00000202
+00020200
+00000000
+00000000
+00111101
+01000110
+01101110
+-----------------------------------------
+------------------------------------
+B.
+White Player
+Number of nodes expanded: 5166
+Black Player
+Number of nodes expanded: 5695
+------------------------------------
+C.
+White Player
+Average Number of nodes expanded per move: 224.608695652
+Average amount of time to make a move: 1.36843530435
+Black Player
+Average Number of nodes expanded per move: 258.863636364
+Average amount of time to make a move: 0.564165409091
+Total: 
+Average Number of nodes expanded per move: 241.355555556
+Average amount of time to make a move: 0.975236688889
+------------------------------------
+D.
+White captured 9 black pieces
+Black captured 2 white pieces
+Total Number of moves: 45
+------------------------------------Final Results-End------------------------------------------
+Match5: Def2 vs Def
+move number :50
+------------------------------------Final Results-------------------------------------------
+A.
+White Player wins
+-----------------------------------------
+10000220
+00020000
+20002201
+00200202
+20000101
+10101111
+01110100
+00000000
+-----------------------------------------
+------------------------------------
+B.
+White Player
+Number of nodes expanded: 11003
+Black Player
+Number of nodes expanded: 7954
+------------------------------------
+C.
+White Player
+Average Number of nodes expanded per move: 343.84375
+Average amount of time to make a move: 1.99836478125
+Black Player
+Average Number of nodes expanded per move: 256.580645161
+Average amount of time to make a move: 0.642264709677
+Total: 
+Average Number of nodes expanded per move: 300.904761905
+Average amount of time to make a move: 1.33107744444
+------------------------------------
+D.
+White captured 6 black pieces
+Black captured 2 white pieces
+Total Number of moves: 63
+------------------------------------Final Results-End------------------------------------------
+Match6: Off2 vs Def2
+move number :50
+------------------------------------Final Results-------------------------------------------
+A.
+White Player wins
+-----------------------------------------
+01000000
+00020000
+00202022
+02001222
+01020000
+11000111
+01000011
+00000000
+-----------------------------------------
+------------------------------------
+B.
+White Player
+Number of nodes expanded: 10960
+Black Player
+Number of nodes expanded: 8073
+------------------------------------
+C.
+White Player
+Average Number of nodes expanded per move: 296.216216216
+Average amount of time to make a move: 1.69704756757
+Black Player
+Average Number of nodes expanded per move: 224.25
+Average amount of time to make a move: 1.40313147222
+Total: 
+Average Number of nodes expanded per move: 260.726027397
+Average amount of time to make a move: 1.55210264384
+------------------------------------
+D.
+White captured 6 black pieces
+Black captured 5 white pieces
+Total Number of moves: 73
+------------------------------------Final Results-End------------------------------------------

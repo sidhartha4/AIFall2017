@@ -9,6 +9,7 @@ import random
 from copy import deepcopy
 
 from datetime import datetime
+from bisect import bisect
 
 
 
@@ -44,11 +45,150 @@ def defensiveHeuristicTwo(node, whoseMove):
 
 	valMatBlack = [[1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], \
 	[1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1],  [1, 1, 1, 1, 1, 1, 1, 1], \
-	[1, 1, 1, 1, 1, 1, 1, 1], [10, 10, 10, 10, 10, 10, 10, 10]]
+	[1, 1, 1, 1, 1, 1, 1, 1], [50, 50, 50, 50, 50, 50, 50, 50]]
 
-	valMatWhite = [[10, 10, 10, 10, 10, 10, 10, 10], [1, 1, 1, 1, 1, 1, 1, 1],  \
+	valMatWhite = [[50, 50, 50, 50, 50, 50, 50, 50], [1, 1, 1, 1, 1, 1, 1, 1],  \
 	[1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], \
 	[1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1]]
+		
+
+	val = 0
+	if whoseMove == 1:
+			if node[1] <= 4:
+				val = -50 
+		#if node[1] > node[2]:
+			val = val + 2.5*(node[1] - node[2])
+
+	else:
+			if node[2] <= 4:
+				val = -50
+		#if node[2] > node[1]:
+			val = val + 2.5*(node[2] - node[1])
+
+	content = deepcopy(node[0])
+	newBoard = deepcopy(content)
+
+	i = 0
+	for row in content:
+		j = 0
+		for col in row:
+			if i == 1 and whoseMove == 2:
+				if col == 1:
+					val = val - 50
+			if i == len(content)-2 and whoseMove == 1:
+				if col == 2:
+					val = val - 50
+
+			if col == 1 and whoseMove == 1:
+
+				val2 = 0
+
+				if i+1 < len(content) and j+1 < len(row) and newBoard[i+1][j+1] == 1: 
+					val2 = val2+1
+
+				if i+1 < len(content) and j-1 >= 0 and newBoard[i+1][j-1] == 1: 
+					val2 = val2+1
+					
+				if i-1 >= 0 and j+1 < len(row)  and newBoard[i-1][j+1] == 2: 
+					val2 = val2-1
+				
+				if i-1 >= 0  and j-1 >= 0 and newBoard[i-1][j-1] == 2: 
+					val2 = val2-1
+				
+
+
+				val3 = 0
+				#diagonal
+				if i-1 >= 0 and j+1 < len(row)  and newBoard[i-1][j+1] == 1: 
+					val3 = val3+0.3
+				
+				if i-1 >= 0  and j-1 >= 0 and newBoard[i-1][j-1] == 1: 
+					val3 = val3+0.3
+				
+				#if i-1 >= 0 and newBoard[i-1][j] == 1: 
+				#	val3 = val3+0.2
+				
+				if i-2 >= 0  and j-1 >= 0 and newBoard[i-2][j-1] == 1: 
+					val3 = val3+0.2
+				
+				if i-2 >= 0 and j+1 < len(row)  and newBoard[i-2][j+1] == 1: 
+					val3 = val3+0.2
+				
+				#if i-2 >= 0 and newBoard[i-2][j] == 1: 
+				#	val3 = val3+0.25
+				
+				val = val + val3	
+
+
+				if val2 > 0:
+					val = val + valMatWhite[i][j]*1.5
+				else:
+					# if my pawn does not have enough defense
+					val = val + valMatWhite[i][j]*0.8
+
+
+			elif col == 2 and whoseMove == 2:
+
+				val2 = 0
+
+				if i-1 >= 0 and j+1 < len(row) and newBoard[i-1][j+1] == 2: 
+					val2 = val2+1
+
+				if i-1 >= 0 and j-1 >= 0 and newBoard[i-1][j-1] == 2: 
+					val2 = val2+1
+					
+				if i+1 < len(content) and j+1 < len(row)  and newBoard[i+1][j+1] == 1: 
+					val2 = val2-1
+				
+				if i+1 < len(content) and j-1 >= 0 and newBoard[i+1][j-1] == 1: 
+					val2 = val2-1
+
+
+				val3 = 0
+					
+				if i+1 < len(content) and j+1 < len(row)  and newBoard[i+1][j+1] == 1: 
+					val3 = val3+0.3
+				
+				if i+1 < len(content)  and j-1 >= 0 and newBoard[i+1][j-1] == 1: 
+					val3 = val3+0.3
+				
+				#if i+1 < len(content) and newBoard[i+1][j] == 1: 
+				#	val3 = val3+0.25
+				
+				if i+2 < len(content)  and j-1 >= 0 and newBoard[i+2][j-1] == 1: 
+					val3 = val3+0.2
+				
+				if i+2 < len(content) and j+1 < len(row)  and newBoard[i+2][j+1] == 1: 
+					val3 = val3+0.2
+				
+				#if i+2 < len(content) and newBoard[i+2][j] == 1: 
+				#	val3 = val3+0.25
+				
+				val = val + val3	
+
+				
+				if val2 > 0:
+					val = val + valMatBlack[i][j]*1.5
+				else:
+					val = val + valMatBlack[i][j]*0.8
+
+
+			j = j+1
+		i = i+1
+
+	val = val + random.random()
+	return val
+
+
+def offensiveHeuristicTwo(node, whoseMove):
+
+	valMatBlack = [[1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], [2, 2, 2, 2, 2, 2, 2, 2], \
+	[2, 2, 2, 2, 2, 2, 2, 2], [3, 3, 3, 3, 3, 3, 3, 3],  [3, 3, 3, 3, 3, 3, 3, 3], \
+	[4, 4, 4, 4, 4, 4, 4, 4], [100, 100, 100, 100, 100, 100, 100, 100]]
+
+	valMatWhite = [[100, 100, 100, 100, 100, 100, 100, 100], [4, 4, 4, 4, 4, 4, 4, 4],  \
+	[3, 3, 3, 3, 3, 3, 3, 3], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], \
+	[2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1]]
 	
 
 	'''
@@ -63,12 +203,16 @@ def defensiveHeuristicTwo(node, whoseMove):
 
 	val = 0
 	if whoseMove == 1:
+			if node[1] <= 4:
+				val = -50		
 		#if node[1] > node[2]:
-			val = val + 2*(node[1] - node[2])
+			val = val + 6*(node[1] - node[2])
 
 	else:
+			if node[2] <= 4:
+				val = -50		
 		#if node[2] > node[1]:
-			val = val + 2*(node[2] - node[1])
+			val = val + 6*(node[2] - node[1])
 
 	content = deepcopy(node[0])
 	newBoard = deepcopy(content)
@@ -77,17 +221,15 @@ def defensiveHeuristicTwo(node, whoseMove):
 	i = 0
 
 
-
-
 	for row in content:
 		j = 0
 		for col in row:
 			if i == 1 and whoseMove == 2:
 				if col == 1:
-					val = val - 100
+					val = val - 50
 			if i == len(content)-2 and whoseMove == 1:
 				if col == 2:
-					val = val - 100
+					val = val - 50
 
 			if col == 1 and whoseMove == 1:
 
@@ -110,22 +252,22 @@ def defensiveHeuristicTwo(node, whoseMove):
 				val3 = 0
 					
 				if i-1 >= 0 and j+1 < len(row)  and newBoard[i-1][j+1] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.1
 				
 				if i-1 >= 0  and j-1 >= 0 and newBoard[i-1][j-1] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.1
 				
 				if i-1 >= 0 and newBoard[i-1][j] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.1
 				
 				if i-2 >= 0  and j-1 >= 0 and newBoard[i-2][j-1] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.1
 				
 				if i-2 >= 0 and j+1 < len(row)  and newBoard[i-2][j+1] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.1
 				
 				if i-2 >= 0 and newBoard[i-2][j] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.1
 				
 				val = val + val3	
 
@@ -158,22 +300,22 @@ def defensiveHeuristicTwo(node, whoseMove):
 				val3 = 0
 					
 				if i+1 < len(content) and j+1 < len(row)  and newBoard[i+1][j+1] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.1
 				
 				if i+1 < len(content)  and j-1 >= 0 and newBoard[i+1][j-1] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.1
 				
 				if i+1 < len(content) and newBoard[i+1][j] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.1
 				
 				if i+2 < len(content)  and j-1 >= 0 and newBoard[i+2][j-1] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.1
 				
 				if i+2 < len(content) and j+1 < len(row)  and newBoard[i+2][j+1] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.1
 				
 				if i+2 < len(content) and newBoard[i+2][j] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.1
 				
 				val = val + val3	
 
@@ -189,17 +331,17 @@ def defensiveHeuristicTwo(node, whoseMove):
 	val = val + random.random()
 	return val
 
-def offensiveHeuristicTwo(content, whoseMove):
 
-	val = 0
-	return val
 
-def MovesPossibleToMake(node, whoseMove):
+
+def MovesPossibleToMake(node, whoseMove,strategy):
+
+	#print(len(transpositionTabWhite))
 
 	content = node[0]
 	whitePieces = node[1]
 	blackPieces = node[2]
-
+	stringForm = node[3]
 
 	#print(whoseMove)
 	moveList = []
@@ -213,23 +355,46 @@ def MovesPossibleToMake(node, whoseMove):
 			
 				newBoard = deepcopy(content)	
 			
+				newstringForm = deepcopy(stringForm)
+
 				if i-1 >=0 and j+1 < len(row) and newBoard[i-1][j+1] == 2: 
 
 					newBoard[i][j] = 0
 					newBoard[i-1][j+1] = 1
 
-					node = [newBoard, whitePieces, blackPieces-1]
+					newstringFormFinal = array("c", newstringForm)
+
+					newstringFormFinal[(i-1)*len(row)+j+1] = "1"
+					newstringFormFinal[i*len(row)+j] = "0"
+
+					newstringFormFinal = newstringFormFinal.tostring()
+
+					node = [newBoard, whitePieces, blackPieces-1, newstringFormFinal]
 					moveList.append(node)
+					
+
+
+
 
 				elif i-1 >=0 and j+1 < len(row) and newBoard[i-1][j+1] == 0:
 
 					newBoard[i][j] = 0
 					newBoard[i-1][j+1] = 1
 
-					node = [newBoard, whitePieces, blackPieces]
+					newstringFormFinal = array("c", newstringForm)
+
+					newstringFormFinal[(i-1)*len(row)+j+1] = "1"
+					newstringFormFinal[i*len(row)+j] = "0"
+
+					newstringFormFinal = newstringFormFinal.tostring()
+
+					node = [newBoard, whitePieces, blackPieces, newstringFormFinal]
 					moveList.append(node)
 
+
 				newBoard = deepcopy(content)
+
+				newstringForm = deepcopy(stringForm)
 
 
 				if i-1 >=0 and j-1 >= 0 and newBoard[i-1][j-1] == 2:				
@@ -237,83 +402,199 @@ def MovesPossibleToMake(node, whoseMove):
 					newBoard[i][j] = 0
 					newBoard[i-1][j-1] = 1
 
-					node = [newBoard, whitePieces, blackPieces-1]
+					newstringFormFinal = array("c", newstringForm)
+
+					newstringFormFinal[(i-1)*len(row)+j-1] = "1"
+					newstringFormFinal[i*len(row)+j] = "0"
+
+					newstringFormFinal = newstringFormFinal.tostring()
+
+					node = [newBoard, whitePieces, blackPieces-1, newstringFormFinal]
 					moveList.append(node)
+
 
 				elif i-1 >=0 and j-1 >= 0 and newBoard[i-1][j-1] == 0:
 
 					newBoard[i][j] = 0
 					newBoard[i-1][j-1] = 1
 
-					node = [newBoard, whitePieces, blackPieces]
+
+					newstringFormFinal = array("c", newstringForm)
+
+					newstringFormFinal[(i-1)*len(row)+j-1] = "1"
+					newstringFormFinal[i*len(row)+j] = "0"
+
+					newstringFormFinal = newstringFormFinal.tostring()
+
+					node = [newBoard, whitePieces, blackPieces, newstringFormFinal]
 					moveList.append(node)
 
+
+
 				newBoard = deepcopy(content)
+
+				newstringForm = deepcopy(stringForm)
+
 
 				if i-1 >=0 and newBoard[i-1][j] == 0:
 
 					newBoard[i][j] = 0
 					newBoard[i-1][j] = 1
 
-					node = [newBoard, whitePieces, blackPieces]
+
+					newstringFormFinal = array("c", newstringForm)
+
+					newstringFormFinal[(i-1)*len(row)+j] = "1"
+					newstringFormFinal[i*len(row)+j] = "0"
+
+					newstringFormFinal = newstringFormFinal.tostring()
+
+					node = [newBoard, whitePieces, blackPieces, newstringFormFinal]
 					moveList.append(node)
+
 
 	
 			elif col == 2 and whoseMove == 2:
 	
 				newBoard = deepcopy(content)	
 
+				newstringForm = deepcopy(stringForm)
+
+
 				if i+1 <len(content) and j+1 <len(row) and newBoard[i+1][j+1] == 1: 
 
 					newBoard[i][j] = 0
 					newBoard[i+1][j+1] = 2
 
-					node = [newBoard, whitePieces-1, blackPieces]
+
+					newstringFormFinal = array("c", newstringForm)
+
+					newstringFormFinal[(i+1)*len(row)+j+1] = "2"
+					newstringFormFinal[i*len(row)+j] = "0"
+
+					newstringFormFinal = newstringFormFinal.tostring()
+
+
+					node = [newBoard, whitePieces-1, blackPieces, newstringFormFinal]
 					moveList.append(node)
+
 
 				elif i+1 <len(content) and j+1 <len(row) and newBoard[i+1][j+1] == 0:
 
 					newBoard[i][j] = 0
 					newBoard[i+1][j+1] = 2
 
-					node = [newBoard, whitePieces, blackPieces]
+					newstringFormFinal = array("c", newstringForm)
+
+					newstringFormFinal[(i+1)*len(row)+j+1] = "2"
+					newstringFormFinal[i*len(row)+j] = "0"
+
+					newstringFormFinal = newstringFormFinal.tostring()
+
+
+					node = [newBoard, whitePieces, blackPieces, newstringFormFinal]
 					moveList.append(node)
 
+
 				newBoard = deepcopy(content)
+
+				newstringForm = deepcopy(stringForm)
+
 
 				if i+1 <len(content) and j-1 >=0 and newBoard[i+1][j-1] == 1:				
 
 					newBoard[i][j] = 0
 					newBoard[i+1][j-1] = 2
 
-					node = [newBoard, whitePieces-1, blackPieces]
+					newstringFormFinal = array("c", newstringForm)
+
+					newstringFormFinal[(i+1)*len(row)+j-1] = "2"
+					newstringFormFinal[i*len(row)+j] = "0"
+
+					newstringFormFinal = newstringFormFinal.tostring()
+
+
+					node = [newBoard, whitePieces-1, blackPieces, newstringFormFinal]
 					moveList.append(node)
+
 
 				elif i+1 <len(content) and j-1 >=0 and newBoard[i+1][j-1] == 0:
 
 					newBoard[i][j] = 0
 					newBoard[i+1][j-1] = 2
 
-					node = [newBoard, whitePieces, blackPieces]
+					newstringFormFinal = array("c", newstringForm)
+
+					newstringFormFinal[(i+1)*len(row)+j-1] = "2"
+					newstringFormFinal[i*len(row)+j] = "0"
+
+					newstringFormFinal = newstringFormFinal.tostring()
+
+					node = [newBoard, whitePieces, blackPieces, newstringFormFinal]
 					moveList.append(node)
 
+
 				newBoard = deepcopy(content)
+
+				newstringForm = deepcopy(stringForm)
 
 				if i+1 < len(content) and newBoard[i+1][j] == 0:
 
 					newBoard[i][j] = 0
 					newBoard[i+1][j] = 2
 
-					node = [newBoard, whitePieces, blackPieces]
+
+					newstringFormFinal = array("c", newstringForm)
+
+					newstringFormFinal[(i+1)*len(row)+j] = "2"
+					newstringFormFinal[i*len(row)+j] = "0"
+
+					newstringFormFinal = newstringFormFinal.tostring()
+
+					node = [newBoard, whitePieces, blackPieces, newstringFormFinal]
 					moveList.append(node)
+
 
 			j = j+1
 
 		i = i+1
 
+	#return moveList
+
+	finalList = []
+	scoreList = []
+
+	ja = 0
+
+	for ia in moveList:
+
+		score = 0
+
+		if strategy == "Def":
+			score = defensiveHeuristicOne(node[0], whoseMove)
+		elif strategy == "Off":
+			score = offensiveHeuristicOne(node[0], whoseMove)
+
+		elif strategy == "Def2":
+			score = defensiveHeuristicTwo(node, whoseMove)
+
+		elif strategy == "Off2":
+			score = offensiveHeuristicTwo(node, whoseMove)
+
+		
+		score = -1*score
 
 
-	return moveList
+		if ja != 0:
+			index = bisect(scoreList, score)
+			finalList.insert(index, ia)
+			scoreList = scoreList.insert(index,score)
+		else:
+			finalList.append(ia)
+			scoreList.append(score)
+		
+	
+	return finalList
 
 
 def printBoard(board):
@@ -329,12 +610,35 @@ def printBoard(board):
 
 
 
+
+transpositionTabWhite = dict()
+transpositionTabBlack = dict()
+
+
 def alphaBeta(node, whoseMove, strategy, isMax, depth, totDepth, maxVal, minVal):
+
+	positionNow = ""
+	if whoseMove == 1:
+		positionNow = node[3]+str(depth)
+
+		if positionNow in transpositionTabWhite:
+			retTot = [transpositionTabWhite[positionNow], node]
+			#print("evalAl")
+			return retTot
+
+	else:
+
+		positionNow = node[3]+str(depth)
+
+		if positionNow in transpositionTabBlack:
+			retTot = [transpositionTabBlack[positionNow], node]
+			#print("evalAl")
+			return retTot
 
 
 	if depth == totDepth:
 		
-		score = None
+		score = 0
 		
 		if strategy == "Def":
 			score = defensiveHeuristicOne(node[0], whoseMove)
@@ -343,6 +647,9 @@ def alphaBeta(node, whoseMove, strategy, isMax, depth, totDepth, maxVal, minVal)
 		
 		elif strategy == "Def2":
 			score = defensiveHeuristicTwo(node, whoseMove)
+
+		elif strategy == "Off2":
+			score = offensiveHeuristicTwo(node, whoseMove)
 
 		retTot = [score, node]
 
@@ -353,7 +660,29 @@ def alphaBeta(node, whoseMove, strategy, isMax, depth, totDepth, maxVal, minVal)
 	if isMax == 1:
 		
 		#print("yeah1")
-		moveList = MovesPossibleToMake(node,whoseMove)
+		moveList = MovesPossibleToMake(node,whoseMove,strategy)
+
+
+
+		if len(moveList) == 0:
+			score = 0
+		
+			if strategy == "Def":
+				score = defensiveHeuristicOne(node[0], whoseMove)
+			elif strategy == "Off":
+				score = offensiveHeuristicOne(node[0], whoseMove)
+			
+			elif strategy == "Def2":
+				score = defensiveHeuristicTwo(node, whoseMove)
+
+			elif strategy == "Off2":
+				score = offensiveHeuristicTwo(node, whoseMove)
+
+			retTot = [score, node]
+
+			return retTot;
+ 
+
 
 		nodeStatus = deepcopy(node)
 
@@ -362,8 +691,15 @@ def alphaBeta(node, whoseMove, strategy, isMax, depth, totDepth, maxVal, minVal)
 		newMax = 0
 
 		v = [-1000000,nodeStatus]
+		#print(len(moveList))
+
 
 		for i in moveList:
+
+		#	for ja in i[0]:
+		#		print(ja)
+			
+
 
 			nodeNew = deepcopy(i)
 
@@ -383,12 +719,42 @@ def alphaBeta(node, whoseMove, strategy, isMax, depth, totDepth, maxVal, minVal)
 		#print(maxVal)
 
 		retTot = v 
+		if whoseMove == 1:
+			transpositionTabWhite[positionNow] = v[0]
+		else:
+			transpositionTabBlack[positionNow] = v[0]
+		
 		return retTot
 
 	else:
 
 		#print("yeah2")
-		moveList = MovesPossibleToMake(node,whoseMove)
+		moveList = []
+		if whoseMove == 1:
+			moveList = MovesPossibleToMake(node,2,strategy)
+		else:
+			moveList = MovesPossibleToMake(node,1,strategy)
+
+
+		if len(moveList) == 0:
+			score = 0
+		
+			if strategy == "Def":
+				score = defensiveHeuristicOne(node[0], whoseMove)
+			elif strategy == "Off":
+				score = offensiveHeuristicOne(node[0], whoseMove)
+			
+			elif strategy == "Def2":
+				score = defensiveHeuristicTwo(node, whoseMove)
+
+			elif strategy == "Off2":
+				score = offensiveHeuristicTwo(node, whoseMove)
+
+			retTot = [score, node]
+
+			return retTot;
+
+
 
 		nodeStatus = deepcopy(node)
 
@@ -396,10 +762,18 @@ def alphaBeta(node, whoseMove, strategy, isMax, depth, totDepth, maxVal, minVal)
 
 		newMax = 1
 
+		
 		v = [1000000, nodeStatus]
+
+		#print(len(moveList))
+
+
 
 		for i in moveList:
 
+		#	for ja in i[0]:
+		#		print(ja)
+			
 			nodeNew = deepcopy(i)
 			
 			evalTot = alphaBeta(nodeNew, newMove, strategy, newMax, depth+1, totDepth, maxVal, minVal)
@@ -416,6 +790,13 @@ def alphaBeta(node, whoseMove, strategy, isMax, depth, totDepth, maxVal, minVal)
 
 
 		retTot = v 
+
+
+		if whoseMove == 1:
+			transpositionTabWhite[positionNow] = v[0]
+		else:
+			transpositionTabBlack[positionNow] = v[0]
+
 		return retTot
 
 
@@ -423,32 +804,62 @@ def alphaBeta(node, whoseMove, strategy, isMax, depth, totDepth, maxVal, minVal)
 
 
 
-
 def miniMax(node, whoseMove, strategy, isMax, depth, totDepth):
+	
 
 
 	if depth == totDepth:
-		score = None
+		score = 0
 		if strategy == "Def":
 			score = defensiveHeuristicOne(node[0], whoseMove)
 		elif strategy == "Off":
 			score = offensiveHeuristicOne(node[0], whoseMove)
-
 		elif strategy == "Def2":
 			score = defensiveHeuristicTwo(node, whoseMove)
+		elif strategy == "Off2":
+			score = offensiveHeuristicTwo(node, whoseMove)
+
 
 		retTot = [score, node]
 
 		return retTot;
 
 
+	if whoseMove == 1:
+		global miniMaxNodesWhite
+		miniMaxNodesWhite = miniMaxNodesWhite + 1
+	else:
+		global miniMaxNodesBlack
+		miniMaxNodesBlack = miniMaxNodesBlack + 1
+
 
 	if isMax == 1:
 		
-		moveList = MovesPossibleToMake(node,whoseMove)
+		moveList = MovesPossibleToMake(node,whoseMove,strategy)
+
+
+		if len(moveList) == 0:
+			score = 0
+		
+			if strategy == "Def":
+				score = defensiveHeuristicOne(node[0], whoseMove)
+			elif strategy == "Off":
+				score = offensiveHeuristicOne(node[0], whoseMove)
+			
+			elif strategy == "Def2":
+				score = defensiveHeuristicTwo(node, whoseMove)
+
+			elif strategy == "Off2":
+				score = offensiveHeuristicTwo(node, whoseMove)
+
+			retTot = [score, node]
+
+			return retTot;
+
+
 
 		maxVal = -1000000
-		nodeStatus = None
+		nodeStatus = deepcopy(node)
 
 		newMove = deepcopy(whoseMove)
 
@@ -471,10 +882,35 @@ def miniMax(node, whoseMove, strategy, isMax, depth, totDepth):
 
 	else:
 
-		moveList = MovesPossibleToMake(node,whoseMove)
+		moveList = []
+		if whoseMove == 1:
+			moveList = MovesPossibleToMake(node,2,strategy)
+		else:
+			moveList = MovesPossibleToMake(node,1,strategy)
+
+
+		if len(moveList) == 0:
+			score = 0
+		
+			if strategy == "Def":
+				score = defensiveHeuristicOne(node[0], whoseMove)
+			elif strategy == "Off":
+				score = offensiveHeuristicOne(node[0], whoseMove)
+			
+			elif strategy == "Def2":
+				score = defensiveHeuristicTwo(node, whoseMove)
+
+			elif strategy == "Off2":
+				score = offensiveHeuristicTwo(node, whoseMove)
+
+			retTot = [score, node]
+
+			return retTot;
+
+
 
 		minVal = 1000000
-		nodeStatus = None
+		nodeStatus = deepcopy(node)
 
 		newMove = deepcopy(whoseMove)
 
@@ -494,7 +930,9 @@ def miniMax(node, whoseMove, strategy, isMax, depth, totDepth):
 		return retTot
 
 
-def main(name):
+
+
+def main(name, Player1, Player2, Player1SearchType, Player2SearchType, totDepth1, totDepth2, fileName):
 
 	with open(name) as f:
 		content = f.readlines()
@@ -503,8 +941,9 @@ def main(name):
 
 	pieces = 0
 	contentReal = []
-
-
+	stringReal = ""
+	whitePieces = 0
+	blackPieces = 0
 	for row in content:
 
 		row = row.strip()
@@ -514,37 +953,58 @@ def main(name):
 		rowReal = []
 
 		for col in row:
-			rowReal.append(int(col))
+			if col == "1":
+				whitePieces = whitePieces + 1
+			elif col == "2":
+				blackPieces = blackPieces + 1
 
+			rowReal.append(int(col))
+			stringReal = stringReal + col
 
 		contentReal.append(rowReal)
 
 
-	print(contentReal)
+	#print(contentReal)
 	whoseMove = 1;
 
 
-	node = [contentReal,pieces,pieces]
+	node = [contentReal, whitePieces, blackPieces, stringReal]
 
-	Player1 = "Def2"
-	Player2 = "Off"
 
 	ka = 1
-	printBoard(node[0])
+	#printBoard(node[0])
 
-	filetoWrite = open('workfile2.txt', 'w')
+	transpositionTabWhite.clear()
+	transpositionTabBlack.clear()
+
+	totalTimeWhite = 0
+	totalTimeBlack = 0
+	totalMoveWhite = 0
+	totalMoveBlack = 0
+
+	global miniMaxNodesWhite
+
+	miniMaxNodesWhite = 0
+	global miniMaxNodesBlack
+	miniMaxNodesBlack = 0
+
+	WinnerWho = 0
+
+	filetoWrite = open(fileName, 'w')
 
 
 	while 1:
 
-
 		if node[1] >= 3 and node[2] < 3:
-			print("White wins")
+			WinnerWho = 1
+
+		#	print("White wins")
 			break
 
 		if node[1] < 3 and node[2] >= 3:	
-
-			print("Black wins")
+			WinnerWho = 2
+		
+		#	print("Black wins")
 			break
 
 		matCheck = node[0][0]
@@ -556,7 +1016,7 @@ def main(name):
 				
 
 		if flagCheck >= 3:
-
+			WinnerWho = 1
 			print("White wins")
 			break
 
@@ -568,8 +1028,12 @@ def main(name):
 				
 
 		if flagCheck >= 3:
+			WinnerWho = 2
+		
 			print("Black wins")
 			break
+
+
 
 
 		Currnode = deepcopy(node)
@@ -582,7 +1046,6 @@ def main(name):
 			strategy = Player2
 
 		depth = 0
-		totDepth = 3
 		isMax = 1
 
 		moveChange = None
@@ -591,26 +1054,46 @@ def main(name):
 		if whoseMove == 1:
 
 			t1 = datetime.now()
-			
-			moveChange = alphaBeta(Currnode, whoseMove, strategy, isMax, depth, totDepth, -100000, 100000)
-			#moveChange = miniMax(Currnode, whoseMove, strategy, isMax, depth, totDepth)
+
+			if Player1SearchType == "min":
+				#moveChange = alphaBeta(Currnode, whoseMove, strategy, isMax, depth, totDepth, -100000, 100000)
+				moveChange = miniMax(Currnode, whoseMove, strategy, isMax, depth, totDepth1)
+			elif Player1SearchType == "alphaB":
+				moveChange = alphaBeta(Currnode, whoseMove, strategy, isMax, depth, totDepth1, -100000, 100000)
+
 			t2 = datetime.now()
+
 			delta = t2 - t1
 			
+			totalTimeWhite = totalTimeWhite + delta.total_seconds()
+			
+			totalMoveWhite = totalMoveWhite + 1
+	
+
 
 		else:
 			
 			t1 = datetime.now()
-			moveChange = alphaBeta(Currnode, whoseMove, strategy, isMax, depth, totDepth, -100000, 100000)
+
+
+			if Player2SearchType == "min":
+				moveChange = miniMax(Currnode, whoseMove, strategy, isMax, depth, totDepth2)
+			elif Player2SearchType == "alphaB":
+				moveChange = alphaBeta(Currnode, whoseMove, strategy, isMax, depth, totDepth2, -100000, 100000)
+
+			
 			t2 = datetime.now()
 			delta = t2 - t1
+
+			totalTimeBlack = totalTimeBlack + delta.total_seconds()
+			totalMoveBlack = totalMoveBlack + 1
 
 		node = moveChange[1]	
 
 		print("--------------------------------------------------------------------------------")
-
+		#if ka%50 == 0:
+		#	print("move number :" + str(ka))
 		print("move number :" + str(ka))
-
 		if ka%2 == 0 and ka != 0:
 			print("Black move:")
 		elif ka%2 == 1:
@@ -627,12 +1110,12 @@ def main(name):
 
 			filetoWrite.write('\n')
 
-		else:
-			print(node)
+		#else:
+		#	print(node)
 
-		print(moveChange)
+		#print(moveChange)
 
-		print(delta)
+		#print(delta)
 
 		print("-------------------------------------------------------------------------------")
 
@@ -647,6 +1130,107 @@ def main(name):
 	filetoWrite.close()
 
 
-if __name__ == "__main__":
+	print("------------------------------------Final Results-------------------------------------------")
+	print("A.")
+
+	if WinnerWho == 1:
+		print("White Player wins")
+	else: 
+		print("Black Player wins")
+
+	printBoard(node[0])
+	print("------------------------------------")
+
+	print("B.")
+	print("White Player")
+	if Player1SearchType == "min":
+		print("Number of nodes expanded: "+ str(miniMaxNodesWhite))
+	elif Player1SearchType == "alphaB":
+		print("Number of nodes expanded: "+ str(len(transpositionTabWhite)))
+	print("Black Player")
+	if Player2SearchType == "min":
+		print("Number of nodes expanded: "+ str(miniMaxNodesBlack))
+	elif Player2SearchType == "alphaB":
+		print("Number of nodes expanded: "+ str(len(transpositionTabBlack)))
+
+	print("------------------------------------")
+
+	print("C.")
+
+	TotalNodesExp = 0
+
+	print("White Player")
 	
-	main('input.txt')
+	if Player1SearchType == "min":
+	
+		print("Average Number of nodes expanded per move: "+ str(float(miniMaxNodesWhite)/totalMoveWhite))
+	
+		TotalNodesExp = TotalNodesExp + miniMaxNodesWhite
+	
+	elif Player1SearchType == "alphaB":
+
+		print("Average Number of nodes expanded per move: "+ str(float(len(transpositionTabWhite))/totalMoveWhite))
+	
+		TotalNodesExp = TotalNodesExp + len(transpositionTabWhite)
+
+	print("Average amount of time to make a move: "+ str(float(totalTimeWhite)/totalMoveWhite))
+
+	print("Black Player")
+	
+	if Player2SearchType == "min":
+	
+		print("Average Number of nodes expanded per move: "+ str(float(miniMaxNodesBlack)/totalMoveBlack))
+	
+		TotalNodesExp = TotalNodesExp + miniMaxNodesBlack
+	
+	elif Player2SearchType == "alphaB":
+	
+		print("Average Number of nodes expanded per move: "+ str(float(len(transpositionTabBlack))/totalMoveBlack))
+	
+		TotalNodesExp = TotalNodesExp + len(transpositionTabBlack)
+
+	print("Average amount of time to make a move: "+ str(float(totalTimeBlack)/totalMoveBlack))
+
+
+	print("Total: ")
+	
+	print("Average Number of nodes expanded per move: "+ str(float(TotalNodesExp)/(totalMoveBlack+totalMoveWhite)))
+	
+	print("Average amount of time to make a move: "+ str(float(totalTimeBlack+totalTimeWhite)/(totalMoveBlack+totalMoveWhite)))
+
+
+	#The average number of nodes expanded per move and the average 
+	#amount of time to make a move.
+	
+	print("------------------------------------")
+
+	print("D.")
+	#The number of opponent workers captured by each player, as well as the 
+	#total number of moves required till the win.
+
+	print("White captured " + str(16-node[2]) + " black pieces")
+	print("Black captured " + str(16-node[1]) + " white pieces")
+	print("Total Number of moves: "+ str(totalMoveBlack+totalMoveWhite))
+
+
+
+	print("------------------------------------Final Results-End------------------------------------------")
+
+
+
+if __name__ == "__main__":
+
+	'''
+	Player1 = "Off2"
+	Player2 = "Def"
+	print("Match2: Off2 vs Def")
+
+	main('input.txt', Player1, Player2, "alphaB", "alphaB", 3, 3, "workfile2.txt")
+	'''
+	
+	Player1 = "Def2"
+	Player2 = "Off"
+	print("Match3: Def2 vs Off")
+
+	main('input.txt', Player1, Player2, "alphaB", "alphaB", 3, 3, "workfile3.txt")
+	

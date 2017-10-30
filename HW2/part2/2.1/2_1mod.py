@@ -951,7 +951,7 @@ def miniMax(node, whoseMove, strategy, isMax, depth, totDepth):
 
 
 
-def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
+def main(name, Player1, Player2, Player1SearchType, Player2SearchType, totDepth1, totDepth2, fileName):
 
 	with open(name) as f:
 		content = f.readlines()
@@ -983,7 +983,7 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
 		contentReal.append(rowReal)
 
 
-	print(contentReal)
+	#print(contentReal)
 	whoseMove = 1;
 
 
@@ -991,7 +991,7 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
 
 
 	ka = 1
-	printBoard(node[0])
+	#printBoard(node[0])
 
 	transpositionTabWhite.clear()
 	transpositionTabBlack.clear()
@@ -1009,7 +1009,7 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
 
 	WinnerWho = 0
 
-	filetoWrite = open('workfile.txt', 'w')
+	filetoWrite = open(fileName, 'w')
 
 
 	while 1:
@@ -1017,12 +1017,12 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
 
 		if node[1] != 0 and node[2] == 0:
 			WinnerWho = 1
-			print("White wins")
+		#	print("White wins")
 			break
 
 		if node[1] == 0 and node[2] != 0:	
 			WinnerWho = 2
-			print("Black wins")
+		#	print("Black wins")
 			break
 
 		matCheck = node[0][0]
@@ -1031,7 +1031,7 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
 		for i in matCheck:
 			if i == 1:
 				WinnerWho = 1
-				print("White wins")
+		#		print("White wins")
 				flagCheck = 1
 				break
 
@@ -1043,7 +1043,7 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
 		for i in matCheck2:
 			if i == 2:
 				WinnerWho = 2
-				print("Black wins")
+		#		print("Black wins")
 				flagCheck = 1
 				break
 
@@ -1061,8 +1061,6 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
 			strategy = Player2
 
 		depth = 0
-		totDepth = 1
-		totDepth2 = 1
 		isMax = 1
 
 		moveChange = None
@@ -1074,9 +1072,9 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
 
 			if Player1SearchType == "min":
 				#moveChange = alphaBeta(Currnode, whoseMove, strategy, isMax, depth, totDepth, -100000, 100000)
-				moveChange = miniMax(Currnode, whoseMove, strategy, isMax, depth, totDepth)
+				moveChange = miniMax(Currnode, whoseMove, strategy, isMax, depth, totDepth1)
 			elif Player1SearchType == "alphaB":
-				moveChange = alphaBeta(Currnode, whoseMove, strategy, isMax, depth, totDepth, -100000, 100000)
+				moveChange = alphaBeta(Currnode, whoseMove, strategy, isMax, depth, totDepth1, -100000, 100000)
 
 			t2 = datetime.now()
 
@@ -1094,12 +1092,10 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
 
 
 			if Player2SearchType == "min":
-				#moveChange = alphaBeta(Currnode, whoseMove, strategy, isMax, depth, totDepth, -100000, 100000)
 				moveChange = miniMax(Currnode, whoseMove, strategy, isMax, depth, totDepth2)
 			elif Player2SearchType == "alphaB":
 				moveChange = alphaBeta(Currnode, whoseMove, strategy, isMax, depth, totDepth2, -100000, 100000)
 
-			#moveChange = alphaBeta(Currnode, whoseMove, strategy, isMax, depth, totDepth2, -100000, 100000)
 			
 			t2 = datetime.now()
 			delta = t2 - t1
@@ -1109,18 +1105,18 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
 
 		node = moveChange[1]	
 
-		print("--------------------------------------------------------------------------------")
+		#print("--------------------------------------------------------------------------------")
+		if ka%50 == 0:
+			print("move number :" + str(ka))
 
-		print("move number :" + str(ka))
-
-		if ka%2 == 0 and ka != 0:
-			print("Black move:")
-		elif ka%2 == 1:
-			print("White move:")
+		#if ka%2 == 0 and ka != 0:
+		#	print("Black move:")
+		#elif ka%2 == 1:
+		#	print("White move:")
 			
 
 		if node != None:	
-			printBoard(node[0])
+		#	printBoard(node[0])
 
 			for iaa in node[0]:
 				for jaa in iaa:
@@ -1129,14 +1125,14 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
 
 			filetoWrite.write('\n')
 
-		else:
-			print(node)
+		#else:
+		#	print(node)
 
-		print(moveChange)
+		#print(moveChange)
 
-		print(delta)
+		#print(delta)
 
-		print("-------------------------------------------------------------------------------")
+		#print("-------------------------------------------------------------------------------")
 
 
 		if whoseMove == 1:
@@ -1239,13 +1235,48 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
 
 if __name__ == "__main__":
 
+	Player1 = "Off"
+	Player2 = "Off"
+	print("Match1: Off vs Off")
+	main('input.txt', Player1, Player2, "min", "alphaB", 3, 4, "workfile1.txt")
+
+	Player1 = "Off2"
+	Player2 = "Def"
+	print("Match2: Off2 vs Def")
+
+	main('input.txt', Player1, Player2, "alphaB", "alphaB", 4, 4, "workfile2.txt")
+
+
 	Player1 = "Def2"
 	Player2 = "Off"
-	
-	main('input.txt', Player1, Player2, "min", "alphaB")
+	print("Match3: Def2 vs Off")
 
-	Player3 = "Off2"
-	Player4 = "Def"
+	main('input.txt', Player1, Player2, "alphaB", "alphaB", 4, 4, "workfile3.txt")
+
+
+	Player1 = "Off2"
+	Player2 = "Off"
+	print("Match4: Off2 vs Off")
+
+	main('input.txt', Player1, Player2, "alphaB", "alphaB", 4, 4, "workfile4.txt")
+
+
+	Player1 = "Def2"
+	Player2 = "Def"
+	print("Match5: Def2 vs Def")
+
+	main('input.txt', Player1, Player2, "alphaB", "alphaB", 4, 4, "workfile5.txt")
+
+
+	Player1 = "Off2"
+	Player2 = "Def2"
+	print("Match6: Off2 vs Def2")
+
+	main('input.txt', Player1, Player2, "alphaB", "alphaB", 4, 4, "workfile6.txt")
+
+
+#	Player3 = "Off2"
+#	Player4 = "Def"
 
 	#main('input.txt', Player3, Player4, "alphaB", "alphaB")
 	
