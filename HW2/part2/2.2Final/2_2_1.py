@@ -12,20 +12,6 @@ from datetime import datetime
 from bisect import bisect
 
 
-'''
-
-
-Re-search and search speed 
-improvements are done with transposition tables, move ordering 
-(in order to provide better Alpha-Beta pruning), and Null
-Move Heuristic (speeds the Negamax algorithm by identifying 
-cutoffs, points in the game tree where the current position 
-is so good for the side to move that the best play by the other side would have avoided it).
-
-
-
-
-'''
 
 def defensiveHeuristicOne(content, whoseMove):
 
@@ -39,7 +25,7 @@ def defensiveHeuristicOne(content, whoseMove):
 	#2*(number_of_own_pieces_remaining) + random()
 	return val
 
-# it is offensive
+
 def offensiveHeuristicOne(content, whoseMove):
 
 	val = 60
@@ -53,7 +39,7 @@ def offensiveHeuristicOne(content, whoseMove):
 	return val
 
 
-# it defends
+
 def defensiveHeuristicTwo(node, whoseMove):
 
 
@@ -68,10 +54,14 @@ def defensiveHeuristicTwo(node, whoseMove):
 
 	val = 0
 	if whoseMove == 1:
+			if node[1] <= 4:
+				val = -50 
 		#if node[1] > node[2]:
 			val = val + 2.5*(node[1] - node[2])
 
 	else:
+			if node[2] <= 4:
+				val = -50
 		#if node[2] > node[1]:
 			val = val + 2.5*(node[2] - node[1])
 
@@ -136,10 +126,6 @@ def defensiveHeuristicTwo(node, whoseMove):
 					# if my pawn does not have enough defense
 					val = val + valMatWhite[i][j]*0.8
 
-				for index in range(0, 8):
-					if(newBoard[0][index] == 1):
-						val = 200
-
 
 			elif col == 2 and whoseMove == 2:
 
@@ -186,9 +172,6 @@ def defensiveHeuristicTwo(node, whoseMove):
 				else:
 					val = val + valMatBlack[i][j]*0.8
 
-				for index in range(0, 8):
-					if(newBoard[7][index] == 2):
-						val = 200
 
 			j = j+1
 		i = i+1
@@ -196,7 +179,7 @@ def defensiveHeuristicTwo(node, whoseMove):
 	val = val + random.random()
 	return val
 
-# it is offensive, it implements the research paper
+
 def offensiveHeuristicTwo(node, whoseMove):
 
 	valMatBlack = [[1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], [2, 2, 2, 2, 2, 2, 2, 2], \
@@ -220,12 +203,16 @@ def offensiveHeuristicTwo(node, whoseMove):
 
 	val = 0
 	if whoseMove == 1:
+			if node[1] <= 4:
+				val = -50		
 		#if node[1] > node[2]:
-			val = val + 4*(node[1] - node[2])
+			val = val + 6*(node[1] - node[2])
 
 	else:
+			if node[2] <= 4:
+				val = -50		
 		#if node[2] > node[1]:
-			val = val + 4*(node[2] - node[1])
+			val = val + 6*(node[2] - node[1])
 
 	content = deepcopy(node[0])
 	newBoard = deepcopy(content)
@@ -346,7 +333,7 @@ def offensiveHeuristicTwo(node, whoseMove):
 
 
 
-#this functions figures out ll the moves
+
 def MovesPossibleToMake(node, whoseMove,strategy):
 
 	#print(len(transpositionTabWhite))
@@ -627,7 +614,7 @@ def printBoard(board):
 transpositionTabWhite = dict()
 transpositionTabBlack = dict()
 
-#this functions implements alphabeta
+
 def alphaBeta(node, whoseMove, strategy, isMax, depth, totDepth, maxVal, minVal):
 
 	positionNow = ""
@@ -816,7 +803,7 @@ def alphaBeta(node, whoseMove, strategy, isMax, depth, totDepth, maxVal, minVal)
 
 
 
-#this function implements minimax
+
 def miniMax(node, whoseMove, strategy, isMax, depth, totDepth):
 	
 
@@ -1008,14 +995,15 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType, totDepth1
 
 	while 1:
 
-
-		if node[1] != 0 and node[2] == 0:
+		if node[1] >= 3 and node[2] < 3:
 			WinnerWho = 1
+
 		#	print("White wins")
 			break
 
-		if node[1] == 0 and node[2] != 0:	
+		if node[1] < 3 and node[2] >= 3:	
 			WinnerWho = 2
+		
 		#	print("Black wins")
 			break
 
@@ -1024,25 +1012,28 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType, totDepth1
 		flagCheck = 0
 		for i in matCheck:
 			if i == 1:
-				WinnerWho = 1
-		#		print("White wins")
-				flagCheck = 1
-				break
+				flagCheck = flagCheck + 1
+				
 
-		if flagCheck == 1:
+		if flagCheck >= 3:
+			WinnerWho = 1
+			print("White wins")
 			break
 
 		flagCheck = 0
 	
 		for i in matCheck2:
 			if i == 2:
-				WinnerWho = 2
-		#		print("Black wins")
-				flagCheck = 1
-				break
+				flagCheck = flagCheck + 1
+				
 
-		if flagCheck == 1:
+		if flagCheck >= 3:
+			WinnerWho = 2
+		
+			print("Black wins")
 			break
+
+
 
 
 		Currnode = deepcopy(node)
@@ -1099,18 +1090,18 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType, totDepth1
 
 		node = moveChange[1]	
 
-		#print("--------------------------------------------------------------------------------")
-		if ka%5 == 0:
-			print("move number :" + str(ka))
-
-		#if ka%2 == 0 and ka != 0:
-		#	print("Black move:")
-		#elif ka%2 == 1:
-		#	print("White move:")
+		print("--------------------------------------------------------------------------------")
+		#if ka%50 == 0:
+		#	print("move number :" + str(ka))
+		print("move number :" + str(ka))
+		if ka%2 == 0 and ka != 0:
+			print("Black move:")
+		elif ka%2 == 1:
+			print("White move:")
 			
 
 		if node != None:	
-		#	printBoard(node[0])
+			printBoard(node[0])
 
 			for iaa in node[0]:
 				for jaa in iaa:
@@ -1126,7 +1117,7 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType, totDepth1
 
 		#print(delta)
 
-		#print("-------------------------------------------------------------------------------")
+		print("-------------------------------------------------------------------------------")
 
 
 		if whoseMove == 1:
@@ -1229,50 +1220,17 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType, totDepth1
 
 if __name__ == "__main__":
 
-	'''
-	Player1 = "Off"
-	Player2 = "Off"
-	print("Match1: Off vs Off")
-	main('input.txt', Player1, Player2, "min", "alphaB", 3, 4, "workfile1.txt")
-
+	
 	Player1 = "Off2"
 	Player2 = "Def"
 	print("Match2: Off2 vs Def")
 
-	main('input.txt', Player1, Player2, "alphaB", "alphaB", 4, 4, "workfile2.txt")
-
-
+	main('input.txt', Player1, Player2, "alphaB", "alphaB", 3, 3, "workfile2.txt")
+	
+	'''
 	Player1 = "Def2"
 	Player2 = "Off"
 	print("Match3: Def2 vs Off")
 
 	main('input.txt', Player1, Player2, "alphaB", "alphaB", 4, 4, "workfile3.txt")
-
-
-	Player1 = "Off2"
-	Player2 = "Off"
-	print("Match4: Off2 vs Off")
-
-	main('input.txt', Player1, Player2, "alphaB", "alphaB", 4, 4, "workfile4.txt")
 	'''
-
-
-	Player1 = "Def2"
-	Player2 = "Def"
-	print("Match5: Def2 vs Def")
-	print("yeah")
-	main('input.txt', Player1, Player2, "alphaB", "alphaB", 4, 4, "workfile5.txt")
-
-
-	Player1 = "Off2"
-	Player2 = "Def2"
-	print("Match6: Off2 vs Def2")
-
-	main('input.txt', Player1, Player2, "alphaB", "alphaB", 4, 4, "workfile6.txt")
-
-
-#	Player3 = "Off2"
-#	Player4 = "Def"
-
-	#main('input.txt', Player3, Player4, "alphaB", "alphaB")
-	

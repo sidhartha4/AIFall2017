@@ -64,34 +64,21 @@ def defensiveHeuristicTwo(node, whoseMove):
 	valMatWhite = [[50, 50, 50, 50, 50, 50, 50, 50], [1, 1, 1, 1, 1, 1, 1, 1],  \
 	[1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], \
 	[1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1]]
-	
-
-	'''
-	valMatBlack = [[5, 15, 15, 5, 5, 15, 15, 5], [2, 3, 3, 3, 3, 3, 3, 2], [4, 6, 6, 6, 6, 6, 6, 4], \
-	[7, 10, 10, 10, 10, 10, 10, 7], [11, 15, 15, 15, 15, 15, 15, 11],  [16, 21, 21, 21, 21, 21, 21, 16], \
-	[20, 28, 28, 28, 28, 28, 28, 20], [36, 36, 36, 36, 36, 36, 36, 36]]
-
-	valMatWhite = [[36, 36, 36, 36, 36, 36, 36, 36], [20, 28, 28, 28, 28, 28, 28, 20],  \
-	[16, 21, 21, 21, 21, 21, 21, 16], [11, 15, 15, 15, 15, 15, 15, 11], [7, 10, 10, 10, 10, 10, 10, 7], \
-	[4, 6, 6, 6, 6, 6, 6, 4], [2, 3, 3, 3, 3, 3, 3, 2],[5, 15, 15, 5, 5, 15, 15, 5]]
-	'''
+		
 
 	val = 0
 	if whoseMove == 1:
 		#if node[1] > node[2]:
-			val = val + 2*(node[1] - node[2])
+			val = val + 2.5*(node[1] - node[2])
 
 	else:
 		#if node[2] > node[1]:
-			val = val + 2*(node[2] - node[1])
+			val = val + 2.5*(node[2] - node[1])
 
 	content = deepcopy(node[0])
 	newBoard = deepcopy(content)
 
-
 	i = 0
-
-
 	for row in content:
 		j = 0
 		for col in row:
@@ -121,24 +108,24 @@ def defensiveHeuristicTwo(node, whoseMove):
 
 
 				val3 = 0
-					
+				#diagonal
 				if i-1 >= 0 and j+1 < len(row)  and newBoard[i-1][j+1] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.3
 				
 				if i-1 >= 0  and j-1 >= 0 and newBoard[i-1][j-1] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.3
 				
-				if i-1 >= 0 and newBoard[i-1][j] == 1: 
-					val3 = val3+0.25
+				#if i-1 >= 0 and newBoard[i-1][j] == 1: 
+				#	val3 = val3+0.2
 				
 				if i-2 >= 0  and j-1 >= 0 and newBoard[i-2][j-1] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.2
 				
 				if i-2 >= 0 and j+1 < len(row)  and newBoard[i-2][j+1] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.2
 				
-				if i-2 >= 0 and newBoard[i-2][j] == 1: 
-					val3 = val3+0.25
+				#if i-2 >= 0 and newBoard[i-2][j] == 1: 
+				#	val3 = val3+0.25
 				
 				val = val + val3	
 
@@ -146,9 +133,12 @@ def defensiveHeuristicTwo(node, whoseMove):
 				if val2 > 0:
 					val = val + valMatWhite[i][j]*1.5
 				else:
-					val = val + valMatWhite[i][j]
+					# if my pawn does not have enough defense
+					val = val + valMatWhite[i][j]*0.8
 
-
+				for index in range(0, 8):
+					if(newBoard[0][index] == 1):
+						val = 200
 
 
 			elif col == 2 and whoseMove == 2:
@@ -171,22 +161,22 @@ def defensiveHeuristicTwo(node, whoseMove):
 				val3 = 0
 					
 				if i+1 < len(content) and j+1 < len(row)  and newBoard[i+1][j+1] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.3
 				
 				if i+1 < len(content)  and j-1 >= 0 and newBoard[i+1][j-1] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.3
 				
-				if i+1 < len(content) and newBoard[i+1][j] == 1: 
-					val3 = val3+0.25
+				#if i+1 < len(content) and newBoard[i+1][j] == 1: 
+				#	val3 = val3+0.25
 				
 				if i+2 < len(content)  and j-1 >= 0 and newBoard[i+2][j-1] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.2
 				
 				if i+2 < len(content) and j+1 < len(row)  and newBoard[i+2][j+1] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.2
 				
-				if i+2 < len(content) and newBoard[i+2][j] == 1: 
-					val3 = val3+0.25
+				#if i+2 < len(content) and newBoard[i+2][j] == 1: 
+				#	val3 = val3+0.25
 				
 				val = val + val3	
 
@@ -194,7 +184,11 @@ def defensiveHeuristicTwo(node, whoseMove):
 				if val2 > 0:
 					val = val + valMatBlack[i][j]*1.5
 				else:
-					val = val + valMatBlack[i][j]
+					val = val + valMatBlack[i][j]*0.8
+
+				for index in range(0, 8):
+					if(newBoard[7][index] == 2):
+						val = 200
 
 			j = j+1
 		i = i+1
@@ -271,22 +265,22 @@ def offensiveHeuristicTwo(node, whoseMove):
 				val3 = 0
 					
 				if i-1 >= 0 and j+1 < len(row)  and newBoard[i-1][j+1] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.1
 				
 				if i-1 >= 0  and j-1 >= 0 and newBoard[i-1][j-1] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.1
 				
 				if i-1 >= 0 and newBoard[i-1][j] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.1
 				
 				if i-2 >= 0  and j-1 >= 0 and newBoard[i-2][j-1] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.1
 				
 				if i-2 >= 0 and j+1 < len(row)  and newBoard[i-2][j+1] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.1
 				
 				if i-2 >= 0 and newBoard[i-2][j] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.1
 				
 				val = val + val3	
 
@@ -319,22 +313,22 @@ def offensiveHeuristicTwo(node, whoseMove):
 				val3 = 0
 					
 				if i+1 < len(content) and j+1 < len(row)  and newBoard[i+1][j+1] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.1
 				
 				if i+1 < len(content)  and j-1 >= 0 and newBoard[i+1][j-1] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.1
 				
 				if i+1 < len(content) and newBoard[i+1][j] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.1
 				
 				if i+2 < len(content)  and j-1 >= 0 and newBoard[i+2][j-1] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.1
 				
 				if i+2 < len(content) and j+1 < len(row)  and newBoard[i+2][j+1] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.1
 				
 				if i+2 < len(content) and newBoard[i+2][j] == 1: 
-					val3 = val3+0.25
+					val3 = val3+0.1
 				
 				val = val + val3	
 
@@ -951,7 +945,7 @@ def miniMax(node, whoseMove, strategy, isMax, depth, totDepth):
 
 
 
-def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
+def main(name, Player1, Player2, Player1SearchType, Player2SearchType, totDepth1, totDepth2, fileName):
 
 	with open(name) as f:
 		content = f.readlines()
@@ -983,7 +977,7 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
 		contentReal.append(rowReal)
 
 
-	print(contentReal)
+	#print(contentReal)
 	whoseMove = 1;
 
 
@@ -991,7 +985,7 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
 
 
 	ka = 1
-	printBoard(node[0])
+	#printBoard(node[0])
 
 	transpositionTabWhite.clear()
 	transpositionTabBlack.clear()
@@ -1009,7 +1003,7 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
 
 	WinnerWho = 0
 
-	filetoWrite = open('workfile.txt', 'w')
+	filetoWrite = open(fileName, 'w')
 
 
 	while 1:
@@ -1017,12 +1011,12 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
 
 		if node[1] != 0 and node[2] == 0:
 			WinnerWho = 1
-			print("White wins")
+		#	print("White wins")
 			break
 
 		if node[1] == 0 and node[2] != 0:	
 			WinnerWho = 2
-			print("Black wins")
+		#	print("Black wins")
 			break
 
 		matCheck = node[0][0]
@@ -1031,7 +1025,7 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
 		for i in matCheck:
 			if i == 1:
 				WinnerWho = 1
-				print("White wins")
+		#		print("White wins")
 				flagCheck = 1
 				break
 
@@ -1043,7 +1037,7 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
 		for i in matCheck2:
 			if i == 2:
 				WinnerWho = 2
-				print("Black wins")
+		#		print("Black wins")
 				flagCheck = 1
 				break
 
@@ -1061,8 +1055,6 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
 			strategy = Player2
 
 		depth = 0
-		totDepth = 1
-		totDepth2 = 1
 		isMax = 1
 
 		moveChange = None
@@ -1074,9 +1066,9 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
 
 			if Player1SearchType == "min":
 				#moveChange = alphaBeta(Currnode, whoseMove, strategy, isMax, depth, totDepth, -100000, 100000)
-				moveChange = miniMax(Currnode, whoseMove, strategy, isMax, depth, totDepth)
+				moveChange = miniMax(Currnode, whoseMove, strategy, isMax, depth, totDepth1)
 			elif Player1SearchType == "alphaB":
-				moveChange = alphaBeta(Currnode, whoseMove, strategy, isMax, depth, totDepth, -100000, 100000)
+				moveChange = alphaBeta(Currnode, whoseMove, strategy, isMax, depth, totDepth1, -100000, 100000)
 
 			t2 = datetime.now()
 
@@ -1094,12 +1086,10 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
 
 
 			if Player2SearchType == "min":
-				#moveChange = alphaBeta(Currnode, whoseMove, strategy, isMax, depth, totDepth, -100000, 100000)
 				moveChange = miniMax(Currnode, whoseMove, strategy, isMax, depth, totDepth2)
 			elif Player2SearchType == "alphaB":
 				moveChange = alphaBeta(Currnode, whoseMove, strategy, isMax, depth, totDepth2, -100000, 100000)
 
-			#moveChange = alphaBeta(Currnode, whoseMove, strategy, isMax, depth, totDepth2, -100000, 100000)
 			
 			t2 = datetime.now()
 			delta = t2 - t1
@@ -1110,8 +1100,8 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
 		node = moveChange[1]	
 
 		print("--------------------------------------------------------------------------------")
-
-		print("move number :" + str(ka))
+		if ka%5 == 0:
+			print("move number :" + str(ka))
 
 		if ka%2 == 0 and ka != 0:
 			print("Black move:")
@@ -1129,14 +1119,14 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
 
 			filetoWrite.write('\n')
 
-		else:
-			print(node)
+		#else:
+		#	print(node)
 
-		print(moveChange)
+		#print(moveChange)
 
-		print(delta)
+		#print(delta)
 
-		print("-------------------------------------------------------------------------------")
+		#print("-------------------------------------------------------------------------------")
 
 
 		if whoseMove == 1:
@@ -1239,13 +1229,25 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType):
 
 if __name__ == "__main__":
 
-	Player1 = "Def2"
-	Player2 = "Off"
-	
-	main('input.txt', Player1, Player2, "min", "alphaB")
 
-	Player3 = "Off2"
-	Player4 = "Def"
+
+	#Player1 = "Off"
+	#Player2 = "Off"
+	#print("Match5: Off vs Off")
+	
+	#main('input.txt', Player1, Player2, "min", "alphaB", 3, 1, "workfile5.txt")
+
+
+	Player1 = "Def"
+	Player2 = "Def"
+
+	print("Match6: Def vs Def")
+
+	main('input.txt', Player1, Player2, "min", "alphaB", 3, 1, "workfile6.txt")
+
+
+#	Player3 = "Off2"
+#	Player4 = "Def"
 
 	#main('input.txt', Player3, Player4, "alphaB", "alphaB")
 	

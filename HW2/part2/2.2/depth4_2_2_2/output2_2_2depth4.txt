@@ -1,0 +1,69 @@
+Match2: Off2 vs Def
+A.
+White Player wins
+-----------------------------------------
+2202222212
+2000202020
+0012120212
+2101010101
+0011111111
+-----------------------------------------
+------------------------------------
+B.
+White Player
+Number of nodes expanded: 40858
+Black Player
+Number of nodes expanded: 16541
+------------------------------------
+C.
+White Player
+Average Number of nodes expanded per move: 3714.36363636
+Average amount of time to make a move: 23.2653700909
+Black Player
+Average Number of nodes expanded per move: 1654.1
+Average amount of time to make a move: 3.4240831
+Total: 
+Average Number of nodes expanded per move: 2733.28571429
+Average amount of time to make a move: 13.8171381905
+------------------------------------
+D.
+White captured 3 black pieces
+Black captured 3 white pieces
+Total Number of moves: 21
+------------------------------------Final Results-End------------------------------------------
+Match3: Def2 vs Off
+--------------------------------------------------------------------------------
+------------------------------------Final Results-------------------------------------------
+A.
+White Player wins
+-----------------------------------------
+2212222222
+2002002022
+0000001000
+0021001011
+1111111111
+-----------------------------------------
+------------------------------------
+B.
+White Player
+Number of nodes expanded: 16964
+Black Player
+Number of nodes expanded: 26547
+------------------------------------
+C.
+White Player
+Average Number of nodes expanded per move: 2423.42857143
+Average amount of time to make a move: 16.7185167143
+Black Player
+Average Number of nodes expanded per move: 4424.5
+Average amount of time to make a move: 10.0582931667
+Total: 
+Average Number of nodes expanded per move: 3347.0
+Average amount of time to make a move: 13.6445673846
+------------------------------------
+D.
+White captured 5 black pieces
+Black captured 4 white pieces
+Total Number of moves: 13
+------------------------------------Final Results-End------------------------------------------
+

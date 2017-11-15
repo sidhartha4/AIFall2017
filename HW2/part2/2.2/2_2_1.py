@@ -1220,17 +1220,17 @@ def main(name, Player1, Player2, Player1SearchType, Player2SearchType, totDepth1
 
 if __name__ == "__main__":
 
-	'''
+	
 	Player1 = "Off2"
 	Player2 = "Def"
 	print("Match2: Off2 vs Def")
 
-	main('input.txt', Player1, Player2, "alphaB", "alphaB", 3, 3, "workfile2.txt")
-	'''
+	main('input.txt', Player1, Player2, "alphaB", "alphaB", 4, 4, "workfile2.txt")
 	
+	'''
 	Player1 = "Def2"
 	Player2 = "Off"
 	print("Match3: Def2 vs Off")
 
-	main('input.txt', Player1, Player2, "alphaB", "alphaB", 3, 3, "workfile3.txt")
-	
+	main('input.txt', Player1, Player2, "alphaB", "alphaB", 4, 4, "workfile3.txt")
+	'''

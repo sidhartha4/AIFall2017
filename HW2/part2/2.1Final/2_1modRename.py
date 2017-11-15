@@ -1261,7 +1261,7 @@ if __name__ == "__main__":
 	Player2 = "Def"
 	print("Match5: Def2 vs Def")
 	print("yeah")
-	main('input.txt', Player1, Player2, "alphaB", "alphaB", 4, 4, "workfile5.txt")
+	main('input.txt', Player1, Player2, "alphaB", "alphaB", 3, 3, "workfile5.txt")
 
 
 	Player1 = "Off2"
