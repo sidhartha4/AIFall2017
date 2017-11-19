@@ -5,7 +5,6 @@ import numpy as np
 import math
 
 def findClassLabel():
-
     outfile = "pClass.npy"
     pClass = np.load(outfile)
 
@@ -17,27 +16,28 @@ def findClassLabel():
     with open('testPair.json') as fh:
         a = json.load(fh)
 
+    print(len(a))
     totalElements = 0
     correctItems = 0
 
-    findClass = np.zeros(10)
+    findClass = np.zeros(2)
 
     for element in a:
 
         totalElements = totalElements + 1
         matVal = element[0]
 
-        for iClass in range(0,10):
+        for iClass in range(0,2):
             findClass[iClass] = math.log(pClass[iClass])
 
         for i in range(0, len(matVal)):
             for j in range(0, len(matVal[i])):
-                valToAdd = i* 28 + j
+                valToAdd = i * 10 + j
                 if matVal[i][j] == " ":
-                    for kClass in range(0,10):
+                    for kClass in range(0,2):
                         findClass[kClass] += math.log(featureLabel[kClass][valToAdd][0])
                 else:
-                    for kClass in range(0,10):
+                    for kClass in range(0,2):
                         findClass[kClass] += math.log(featureLabel[kClass][valToAdd][1])
 
         classified = np.argmax(findClass)
@@ -48,9 +48,9 @@ def findClassLabel():
     print(float(correctItems)/totalElements)
 
 def naiveBayes(a):
-    pClass = np.zeros(10)
+    pClass = np.zeros(2)
 
-    featureLabel = np.zeros((10, 784, 2))
+    featureLabel = np.zeros((2, 250, 2))
 
     totalElements = 0
     for element in a:
@@ -59,7 +59,7 @@ def naiveBayes(a):
         matVal = element[0]
         for i in range(0, len(matVal)):
             for j in range(0, len(matVal[i])):
-                valToAdd = i* 28 + j
+                valToAdd = i * 10 + j
                 if matVal[i][j] == " ":
                     featureLabel[element[1]][valToAdd][0] += 1
                 else:
@@ -67,7 +67,7 @@ def naiveBayes(a):
 
     kVal = 10
 
-    for iterV in range(0,10):
+    for iterV in range(0,2):
         #print(featureLabel[iterV])
         featureLabel[iterV] = (featureLabel[iterV]+kVal) /(pClass[iterV]+2*kVal)
 
@@ -98,7 +98,6 @@ def naiveBWrapper():
 
 
 def convertToPickle(fileName):
-
     yesContentTrain = None
     with open(fileName + "/yes_train.txt") as f:
         yesContentTrain = f.readlines()
@@ -112,24 +111,27 @@ def convertToPickle(fileName):
     image = []
     #print(len(yesContentTrain[0]))
     for i in range(0,len(yesContentTrain)):
-        print(yesContentTrain[i][-1:])
-        image.append(yesContentTrain[i][-1:]) 
+        if i % 28 == 25 or i % 28 == 26 or i % 28 == 27:
+            continue
 
-        if i % 25 == 24:
+        image.append(yesContentTrain[i][:-1]) 
+
+        if i % 28 == 24:
             tupleToAdd = (image, 1)
             trainPair.append(tupleToAdd)
             image = []
-            i += 3
 
     #train for no
     for i in range(0,len(noContentTrain)):
-        image.append(noContentTrain[i][-1:]) 
+        if i % 28 == 25 or i % 28 == 26 or i % 28 == 27:
+            continue
 
-        if i % 25 == 24:
+        image.append(noContentTrain[i][:-1]) 
+
+        if i % 28 == 24:
             tupleToAdd = (image, 0)
             trainPair.append(tupleToAdd)
             image = []
-            i += 3
 
 
     with open('trainPair.json', 'w') as fp:
@@ -147,23 +149,27 @@ def convertToPickle(fileName):
     testPair = []
     image = []
     for i in range(0,len(yesContentTest)):
-        image.append(yesContentTest[i][-1:]) 
+        if i % 28 == 25 or i % 28 == 26 or i % 28 == 27:
+            continue
 
-        if i % 25 == 24:
+        image.append(yesContentTest[i][:-1]) 
+
+        if i % 28 == 24:
             tupleToAdd = (image, 1)
             testPair.append(tupleToAdd)
             image = []
-            i += 3
 
     #test for no
     for i in range(0,len(noContentTest)):
-        image.append(noContentTest[i][-1:]) 
+        if i % 28 == 25 or i % 28 == 26 or i % 28 == 27:
+            continue
 
-        if i % 25 == 24:
+        image.append(noContentTest[i][:-1]) 
+
+        if i % 28 == 24:
             tupleToAdd = (image, 0)
             testPair.append(tupleToAdd)
             image = []
-            i += 3
 
     with open('testPair.json', 'w') as fp:
         json.dump(testPair, fp)
