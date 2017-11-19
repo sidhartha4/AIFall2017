@@ -20,24 +20,24 @@ def findClassLabel():
     totalElements = 0
     correctItems = 0
 
-    findClass = np.zeros(2)
+    findClass = np.zeros(5)
 
     for element in a:
 
         totalElements = totalElements + 1
         matVal = element[0]
 
-        for iClass in range(0,2):
+        for iClass in range(0,5):
             findClass[iClass] = math.log(pClass[iClass])
 
         for i in range(0, len(matVal)):
             for j in range(0, len(matVal[i])):
-                valToAdd = i * 10 + j
+                valToAdd = i * 13 + j
                 if matVal[i][j] == " ":
-                    for kClass in range(0,2):
+                    for kClass in range(0,5):
                         findClass[kClass] += math.log(featureLabel[kClass][valToAdd][0])
                 else:
-                    for kClass in range(0,2):
+                    for kClass in range(0,5):
                         findClass[kClass] += math.log(featureLabel[kClass][valToAdd][1])
 
         classified = np.argmax(findClass)
@@ -48,18 +48,18 @@ def findClassLabel():
     print(float(correctItems)/totalElements)
 
 def naiveBayes(a):
-    pClass = np.zeros(2)
+    pClass = np.zeros(5)
 
-    featureLabel = np.zeros((2, 250, 2))
+    featureLabel = np.zeros((5, 390, 2))
 
     totalElements = 0
     for element in a:
-        pClass[element[1]]  = pClass[element[1]]  + 1
+        pClass[element[1]] = pClass[element[1]] + 1
         totalElements = totalElements + 1
         matVal = element[0]
         for i in range(0, len(matVal)):
             for j in range(0, len(matVal[i])):
-                valToAdd = i * 10 + j
+                valToAdd = i * 13 + j
                 if matVal[i][j] == " ":
                     featureLabel[element[1]][valToAdd][0] += 1
                 else:
@@ -67,11 +67,9 @@ def naiveBayes(a):
 
     kVal = 10
 
-    for iterV in range(0,2):
+    for iterV in range(0,5):
         #print(featureLabel[iterV])
         featureLabel[iterV] = (featureLabel[iterV]+kVal) /(pClass[iterV]+2*kVal)
-
-        #print(featureLabel[iterV])
 
     pClass = pClass/totalElements
 
@@ -99,16 +97,17 @@ def naiveBWrapper():
 
 def convertToPickle(fileName):
     contentTrain = None
-    with open(fileName + "/trainingimages") as f:
-            contentTrain = f.readlines()
+    with open(fileName + "/training_data.txt") as f:
+        contentTrain = f.readlines()
             
     contentTrainLabel = None
-    with open(fileName + "/traininglabels") as f:
-            contentTrainLabel = f.readlines()
+    with open(fileName + "/training_labels.txt") as f:
+        contentTrainLabel = f.readlines()
 
     trainPair = []
     image = []
-    int mod = 33 
+    mod = 33 
+    #print(len(contentTrain[0]))
     for i in range(0,len(contentTrain)):
         if i % mod == mod-3 or i % mod == mod-2 or i % mod == mod-1:
             continue
@@ -116,7 +115,7 @@ def convertToPickle(fileName):
         image.append(contentTrain[i][:-1]) 
 
         if i % mod == mod-4:
-            tupleToAdd = (image, contentTrainLabel[int(i/mod)])
+            tupleToAdd = (image, int(contentTrainLabel[int(i/mod)])-1)
             trainPair.append(tupleToAdd)
             image = []
 
@@ -126,12 +125,12 @@ def convertToPickle(fileName):
 
 
     contentTest = None
-    with open(fileName + "/testimages") as f:
-            contentTest = f.readlines()
+    with open(fileName + "/testing_data.txt") as f:
+        contentTest = f.readlines()
             
     contentTestLabel = None
-    with open(fileName + "/testlabels") as f:
-            contentTestLabel = f.readlines()
+    with open(fileName + "/testing_labels.txt") as f:
+        contentTestLabel = f.readlines()
 
     testPair = []
     image = []
@@ -141,8 +140,8 @@ def convertToPickle(fileName):
 
         image.append(contentTest[i][:-1]) 
 
-        if i % mod == mod-1:
-            tupleToAdd = (image, contentTestLabel[int(i/mod)])
+        if i % mod == mod-4:
+            tupleToAdd = (image, int(contentTestLabel[int(i/mod)])-1)
             testPair.append(tupleToAdd)
             image = []
 
