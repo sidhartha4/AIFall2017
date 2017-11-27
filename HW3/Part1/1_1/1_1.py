@@ -4,6 +4,7 @@ import json
 import numpy as np
 import math
 import matplotlib.pyplot as plt
+import matplotlib.colors as clr
 
 def oddRatioMap(finalConfusionMat):
 	outfile = "featureLabel.npy"
@@ -14,80 +15,190 @@ def oddRatioMap(finalConfusionMat):
 	a = confusionMatFlat.argsort()[-14:][::-1] 
 	print(a)
 
-	x = 0
-	x1ListB = []
-	y1ListB = []
-	x1ListG = []
-	y1ListG = []
-	x1ListR = []
-	y1ListR = []
-	x1ListY = []
-	y1ListY = []
-
 	"""
-	my_color = ""
-	for i in featureLabel[0]:
-		x1 = int(x/28)
-		y1 = x%28
-
-			
-		if i[1] < 0.25:
-			x1ListB.append(x1)
-			y1ListB.append(y1)
-		elif i[1] < 0.50:
-			x1ListG.append(x1)
-			y1ListG.append(y1)		
-		elif i[1] < 0.75:
-			x1ListR.append(x1)
-			y1ListR.append(y1)		
-		else:
-			x1ListY.append(x1)
-			y1ListY.append(y1)
-
-
-		x = x+1
 	"""
 	
+	for valA in range(10,14):
 
-	maxV = -4
-	minV = 1500
-	for i in range(0,784):
+		xA = a[valA] 
 
-		y1 = 27 - int(i/28)
-		x1 = i%28
-		v = featureLabel[4][i][1]/featureLabel[9][i][1]
-		print(v)
-		maxV = max(maxV,v)
-		minV = min(minV,v)
+		firstDigit = int(xA/10)
+		secondDigit = xA%10
+		print(xA)
+		print(firstDigit)
+		print(secondDigit) 
 
-
-	for i in range(0,784):
-
-		y1 = 27 - int(i/28)
-		x1 = i%28
-		v = featureLabel[4][i][1]/featureLabel[9][i][1]
-		v = float(v-minV) / (maxV-minV)
-
-		if v < 0.125:
-			x1ListB.append(x1)
-			y1ListB.append(y1)
-		elif v < 0.35:
-			x1ListY.append(x1)
-			y1ListY.append(y1)		
-		elif v < 0.45:
-			x1ListG.append(x1)
-			y1ListG.append(y1)		
-		else:
-			x1ListR.append(x1)
-			y1ListR.append(y1)
+		x = 0
+		x1ListB = []
+		y1ListB = []
+		x1ListG = []
+		y1ListG = []
+		x1ListR = []
+		y1ListR = []
+		x1ListY = []
+		y1ListY = []
 
 
-	plt.plot(x1ListB,y1ListB, 'ro', color='b')
-	plt.plot(x1ListG,y1ListG, 'ro', color='g')
-	plt.plot(x1ListR,y1ListR, 'ro', color='r')
-	plt.plot(x1ListY,y1ListY, 'ro', color='y')
-	plt.show()
+		my_color = ""
+		for i in featureLabel[firstDigit]:
+			y1 = 27 - int(x/28)
+			x1 = x%28
+			
+				
+			if i[1] < 0.25:
+				x1ListB.append(x1)
+				y1ListB.append(y1)
+			elif i[1] < 0.50:
+				x1ListG.append(x1)
+				y1ListG.append(y1)		
+			elif i[1] < 0.75:
+				x1ListR.append(x1)
+				y1ListR.append(y1)		
+			else:
+				x1ListY.append(x1)
+				y1ListY.append(y1)
 
+
+			x = x+1
+
+
+		"""
+		plt.plot(x1ListB,y1ListB, 'ro', color='b')
+		plt.plot(x1ListG,y1ListG, 'ro', color='g')
+		plt.plot(x1ListR,y1ListR, 'ro', color='r')
+		plt.plot(x1ListY,y1ListY, 'ro', color='y')
+		plt.show()
+		"""
+
+		x = 0
+		x1ListB = []
+		y1ListB = []
+		x1ListG = []
+		y1ListG = []
+		x1ListR = []
+		y1ListR = []
+		x1ListY = []
+		y1ListY = []
+
+
+		my_color = ""
+		for i in featureLabel[secondDigit]:
+			y1 = 27 - int(x/28)
+			x1 = x%28
+			
+				
+			if i[1] < 0.25:
+				x1ListB.append(x1)
+				y1ListB.append(y1)
+			elif i[1] < 0.50:
+				x1ListG.append(x1)
+				y1ListG.append(y1)		
+			elif i[1] < 0.75:
+				x1ListR.append(x1)
+				y1ListR.append(y1)		
+			else:
+				x1ListY.append(x1)
+				y1ListY.append(y1)
+
+
+			x = x+1
+
+
+		"""
+		plt.plot(x1ListB,y1ListB, 'ro', color='b')
+		plt.plot(x1ListG,y1ListG, 'ro', color='g')
+		plt.plot(x1ListR,y1ListR, 'ro', color='r')
+		plt.plot(x1ListY,y1ListY, 'ro', color='y')
+		plt.show()
+
+		"""
+
+
+		x1ListB = []
+		y1ListB = []
+		x1ListG = []
+		y1ListG = []
+		x1ListR = []
+		y1ListR = []
+		x1ListY = []
+		y1ListY = []
+
+
+		maxV = -4
+		minV = 1500
+		for i in range(0,784):
+
+			y1 = 27 - int(i/28)
+			x1 = i%28
+			v = math.log(featureLabel[firstDigit][i][1]/featureLabel[secondDigit][i][1])
+			#print(v)
+
+			maxV = max(maxV,v)
+			minV = min(minV,v)
+
+		print(minV)
+		print(maxV)
+		some_matrix = np.zeros((28,28))
+
+		for i in range(0,784):
+
+			y11 = 27 - int(i/28)
+			x11 = i%28
+			x1 = int(i/28)
+			y1 = i%28
+
+			v1 = math.log(featureLabel[firstDigit][i][1]/featureLabel[secondDigit][i][1])
+			v = float(v1-minV) / (maxV-minV)
+
+			some_matrix[x1][y1] = v
+			"""
+			if v < 0.125:
+				x1ListB.append(x1)
+				y1ListB.append(y1)
+			elif v < 0.35:
+				x1ListY.append(x1)
+				y1ListY.append(y1)		
+			elif v < 0.45:
+				x1ListG.append(x1)
+				y1ListG.append(y1)		
+			else:
+				x1ListR.append(x1)
+				y1ListR.append(y1)
+			"""
+
+			if v1 <= -0.2:
+				x1ListB.append(x11)
+				y1ListB.append(y11)
+			elif v1 > -0.2 and v1 <= 0.2:
+				x1ListY.append(x11)
+				y1ListY.append(y11)		
+			elif v1 > 0.2:
+				x1ListR.append(x11)
+				y1ListR.append(y11)		
+			
+		
+		import matplotlib as mpl
+
+		cmap = mpl.cm.bwr
+
+		#cmap = clr.LinearSegmentedColormap.from_list('yo', ['red','yellow','blue'], N=256)
+
+		#cmap = clr.LinearSegmentedColormap.from_list()
+
+		print(some_matrix)
+		plt.matshow(some_matrix, cmap=cmap)
+
+		#plt.plot(some_matrix, cmap=cmap)
+
+		plt.show()
+
+
+		plt.plot(x1ListB,y1ListB, 'ro', color='b')
+		plt.plot(x1ListG,y1ListG, 'ro', color='g')
+		plt.plot(x1ListR,y1ListR, 'ro', color='r')
+		plt.plot(x1ListY,y1ListY, 'ro', color='y')
+		plt.show()
+		break
 
 
 def findClassLabel():
@@ -273,7 +384,7 @@ def naiveBWrapper():
 		for j in i[5]:
 			print(j)
 	
-	#oddRatioMap(finalConfusionMat)
+	oddRatioMap(finalConfusionMat)
 
 	outfile = "finalConfusionMat.npy"
 	np.save(outfile, finalConfusionMat)

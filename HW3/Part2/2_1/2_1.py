@@ -20,7 +20,13 @@ def findClassLabel():
     totalElements = 0
     correctItems = 0
 
+
+    confusionMat = np.zeros((2,2))
+    testClassValues = np.zeros(2)
+
     findClass = np.zeros(2)
+
+
 
     for element in a:
 
@@ -45,7 +51,15 @@ def findClassLabel():
         if classified == int(element[1]):
             correctItems += 1
 
+        testClassValues[int(element[1])] += 1
+        confusionMat[int(element[1])][classified] += 1
+
+    for j in range(0,testClassValues.shape[0]):
+        confusionMat[j] = confusionMat[j]*100/testClassValues[j] 
+
+
     print(float(correctItems)/totalElements)
+    print(confusionMat)
 
 def naiveBayes(a):
     pClass = np.zeros(2)
