@@ -115,17 +115,59 @@ from os.path import isfile, join
 
 def convertToPickle():
 
-
     mypath = "txt_yesno/training/"
     onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 
+    print(onlyfiles)
+
+    trainPair = []
+    for i in onlyfiles:
+        readFile = open(mypath+i,"r")
+        labels = i[:-4].split('_')
+        print(labels)
+        content = readFile.readlines()
+        example = []
+        for j in range(8):
+            example = []
+            for k in range(25):
+                example.append(content[j][j*15+5:(j+1)*15])
+            if labels[j] == '0':
+                tupleToAdd = (example, 0)
+            else:
+                tupleToAdd = (example, 1)
+            trainPair.append(tupleToAdd)
+
+    with open('trainPair.json', 'w') as fp:
+        json.dump(trainPair, fp)
+
+
+
+    mypath = "txt_yesno/yes_test/"
+    onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
+
+    print(onlyfiles)
+
+    testPair = []
+    for i in onlyfiles:
+        readFile = open(mypath+i, "r")
+        content = readFile.readlines()
+        testPair.append((content, 1))
+
+
+    mypath = "txt_yesno/no_test/"
+    onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 
     print(onlyfiles)
 
     for i in onlyfiles:
-        readFile = open(mypath+i,"r")
-        print(readFile.readlines())
+        readFile = open(mypath+i, "r")
+        content = readFile.readlines()
+        testPair.append((content, 0))
+
+
+    with open('testPair.json', 'w') as fp:
+        json.dump(testPair, fp)
 
 if __name__ == "__main__":
     convertToPickle()
-    #naiveBWrapper()
+    naiveBWrapper()
