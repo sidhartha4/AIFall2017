@@ -110,87 +110,22 @@ def naiveBWrapper():
 
 
 
+from os import listdir
+from os.path import isfile, join
 
-def convertToPickle(fileName):
-    yesContentTrain = None
-    with open(fileName + "/yes_train.txt") as f:
-        yesContentTrain = f.readlines()
-
-    noContentTrain = None
-    with open(fileName + "/no_train.txt") as f:
-        noContentTrain = f.readlines()
-
-    # train for yes
-    trainPair = []
-    image = []
-    #print(len(yesContentTrain[0]))
-    for i in range(0,len(yesContentTrain)):
-        if i % 28 == 25 or i % 28 == 26 or i % 28 == 27:
-            continue
-
-        image.append(yesContentTrain[i][:-1]) 
-
-        if i % 28 == 24:
-            tupleToAdd = (image, 1)
-            trainPair.append(tupleToAdd)
-            image = []
-
-    #train for no
-    for i in range(0,len(noContentTrain)):
-        if i % 28 == 25 or i % 28 == 26 or i % 28 == 27:
-            continue
-
-        image.append(noContentTrain[i][:-1]) 
-
-        if i % 28 == 24:
-            tupleToAdd = (image, 0)
-            trainPair.append(tupleToAdd)
-            image = []
+def convertToPickle():
 
 
-    with open('trainPair.json', 'w') as fp:
-        json.dump(trainPair, fp)
-
-    yesContentTest = None
-    with open(fileName + "/yes_test.txt") as f:
-        yesContentTest = f.readlines()
-
-    noContentTest = None
-    with open(fileName + "/no_test.txt") as f:
-        noContentTest = f.readlines()
-
-    # test for yes
-    testPair = []
-    image = []
-    for i in range(0,len(yesContentTest)):
-        if i % 28 == 25 or i % 28 == 26 or i % 28 == 27:
-            continue
-
-        image.append(yesContentTest[i][:-1]) 
-
-        if i % 28 == 24:
-            tupleToAdd = (image, 1)
-            testPair.append(tupleToAdd)
-            image = []
-
-    #test for no
-    for i in range(0,len(noContentTest)):
-        if i % 28 == 25 or i % 28 == 26 or i % 28 == 27:
-            continue
-
-        image.append(noContentTest[i][:-1]) 
-
-        if i % 28 == 24:
-            tupleToAdd = (image, 0)
-            testPair.append(tupleToAdd)
-            image = []
-
-    with open('testPair.json', 'w') as fp:
-        json.dump(testPair, fp)
+    mypath = "txt_yesno/training/"
+    onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 
 
+    print(onlyfiles)
 
+    for i in onlyfiles:
+        readFile = open(mypath+i,"r")
+        print(readFile.readlines())
 
 if __name__ == "__main__":
-    convertToPickle("data")
-    naiveBWrapper()
+    convertToPickle()
+    #naiveBWrapper()
