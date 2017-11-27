@@ -79,7 +79,7 @@ def naiveBayes(a):
                 else:
                     featureLabel[element[1]][valToAdd][1] += 1
 
-    kVal = 10
+    kVal = 3
 
     for iterV in range(0,2):
         #print(featureLabel[iterV])
