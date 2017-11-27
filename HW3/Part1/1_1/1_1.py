@@ -5,6 +5,8 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 import matplotlib.colors as clr
+import matplotlib as mpl
+
 
 def oddRatioMap(finalConfusionMat):
 	outfile = "featureLabel.npy"
@@ -39,36 +41,21 @@ def oddRatioMap(finalConfusionMat):
 		y1ListY = []
 
 
+		some_matrix = np.zeros((28,28))
+
 		my_color = ""
 		for i in featureLabel[firstDigit]:
-			y1 = 27 - int(x/28)
-			x1 = x%28
-			
-				
-			if i[1] < 0.25:
-				x1ListB.append(x1)
-				y1ListB.append(y1)
-			elif i[1] < 0.50:
-				x1ListG.append(x1)
-				y1ListG.append(y1)		
-			elif i[1] < 0.75:
-				x1ListR.append(x1)
-				y1ListR.append(y1)		
-			else:
-				x1ListY.append(x1)
-				y1ListY.append(y1)
 
-
+			some_matrix[int(x/28)][x%28] = i[1]
 			x = x+1
 
 
-		"""
-		plt.plot(x1ListB,y1ListB, 'ro', color='b')
-		plt.plot(x1ListG,y1ListG, 'ro', color='g')
-		plt.plot(x1ListR,y1ListR, 'ro', color='r')
-		plt.plot(x1ListY,y1ListY, 'ro', color='y')
+		cmap = clr.LinearSegmentedColormap.from_list('yo', ['red','yellow','blue'], N=256)
+
+		#print(some_matrix)
+		plt.matshow(some_matrix, cmap=cmap)
+
 		plt.show()
-		"""
 
 		x = 0
 		x1ListB = []
@@ -83,35 +70,16 @@ def oddRatioMap(finalConfusionMat):
 
 		my_color = ""
 		for i in featureLabel[secondDigit]:
-			y1 = 27 - int(x/28)
-			x1 = x%28
-			
-				
-			if i[1] < 0.25:
-				x1ListB.append(x1)
-				y1ListB.append(y1)
-			elif i[1] < 0.50:
-				x1ListG.append(x1)
-				y1ListG.append(y1)		
-			elif i[1] < 0.75:
-				x1ListR.append(x1)
-				y1ListR.append(y1)		
-			else:
-				x1ListY.append(x1)
-				y1ListY.append(y1)
-
-
+			some_matrix[int(x/28)][x%28] = i[1]
 			x = x+1
 
 
-		"""
-		plt.plot(x1ListB,y1ListB, 'ro', color='b')
-		plt.plot(x1ListG,y1ListG, 'ro', color='g')
-		plt.plot(x1ListR,y1ListR, 'ro', color='r')
-		plt.plot(x1ListY,y1ListY, 'ro', color='y')
-		plt.show()
+		cmap = clr.LinearSegmentedColormap.from_list('yo', ['red','yellow','blue'], N=256)
 
-		"""
+		#print(some_matrix)
+		plt.matshow(some_matrix, cmap=cmap)
+
+		plt.show()
 
 
 		x1ListB = []
@@ -136,14 +104,12 @@ def oddRatioMap(finalConfusionMat):
 			maxV = max(maxV,v)
 			minV = min(minV,v)
 
-		print(minV)
-		print(maxV)
+		#print(minV)
+		#print(maxV)
 		some_matrix = np.zeros((28,28))
 
 		for i in range(0,784):
 
-			y11 = 27 - int(i/28)
-			x11 = i%28
 			x1 = int(i/28)
 			y1 = i%28
 
@@ -151,21 +117,9 @@ def oddRatioMap(finalConfusionMat):
 			v = float(v1-minV) / (maxV-minV)
 
 			some_matrix[x1][y1] = v
-			"""
-			if v < 0.125:
-				x1ListB.append(x1)
-				y1ListB.append(y1)
-			elif v < 0.35:
-				x1ListY.append(x1)
-				y1ListY.append(y1)		
-			elif v < 0.45:
-				x1ListG.append(x1)
-				y1ListG.append(y1)		
-			else:
-				x1ListR.append(x1)
-				y1ListR.append(y1)
-			"""
 
+			y11 = 27-int(i/28)
+			x11 = i%28
 			if v1 <= -0.2:
 				x1ListB.append(x11)
 				y1ListB.append(y11)
@@ -177,29 +131,27 @@ def oddRatioMap(finalConfusionMat):
 				y1ListR.append(y11)		
 			
 		
-		import matplotlib as mpl
 
-		cmap = mpl.cm.bwr
+		#cmap = mpl.cm.bwr
 
-		#cmap = clr.LinearSegmentedColormap.from_list('yo', ['red','yellow','blue'], N=256)
+		cmap = clr.LinearSegmentedColormap.from_list('yo', ['blue','yellow','red'], N=256)
 
 		#cmap = clr.LinearSegmentedColormap.from_list()
 
-		print(some_matrix)
+		#print(some_matrix)
 		plt.matshow(some_matrix, cmap=cmap)
 
 		#plt.plot(some_matrix, cmap=cmap)
 
 		plt.show()
 
-
+		"""
 		plt.plot(x1ListB,y1ListB, 'ro', color='b')
 		plt.plot(x1ListG,y1ListG, 'ro', color='g')
 		plt.plot(x1ListR,y1ListR, 'ro', color='r')
 		plt.plot(x1ListY,y1ListY, 'ro', color='y')
 		plt.show()
-		break
-
+		"""
 
 def findClassLabel():
 
@@ -338,7 +290,7 @@ def naiveBWrapper():
 	print(len(a))
 	AccuracyValues = []
 	
-	kValues = np.logspace(-1,1,26)
+	kValues = np.logspace(-1,1,21)
 
 	maxAccuracyVal = -1
 
@@ -354,7 +306,6 @@ def naiveBWrapper():
 			finaltestExamplesWithProbabilites = testExamplesWithProbabilites
 	"""
 
-
 	naiveBayes(a,kVal)
 	accuracyValue, confusionMat, testExamplesWithProbabilites = findClassLabel()
 	AccuracyValues.append(accuracyValue)
@@ -363,10 +314,10 @@ def naiveBWrapper():
 		finalConfusionMat = confusionMat
 		finaltestExamplesWithProbabilites = testExamplesWithProbabilites
 
+	print(maxAccuracyVal)	
+	print(finalConfusionMat)
 
-	#print(finalConfusionMat)
-	#print(finaltestExamplesWithProbabilites)
-	
+	"""
 	for i in finaltestExamplesWithProbabilites:
 		print("--------------------------------------max---------------------------------------")
 		print(i[0])
@@ -383,7 +334,7 @@ def naiveBWrapper():
 
 		for j in i[5]:
 			print(j)
-	
+	"""
 	oddRatioMap(finalConfusionMat)
 
 	outfile = "finalConfusionMat.npy"

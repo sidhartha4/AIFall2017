@@ -84,6 +84,11 @@ def findClassLabelGeneric(m, n, disJoin):
 	totalElements = 0
 	correctItems = 0
 
+	confusionMat = np.zeros((10,10))
+
+	testClassValues = np.zeros(10)
+
+
 	findClass = np.zeros(10)
 
 	for element in a:
@@ -140,11 +145,20 @@ def findClassLabelGeneric(m, n, disJoin):
 		if classified == int(element[1]):
 			correctItems += 1
 
+
+		testClassValues[int(element[1])] += 1
+		confusionMat[int(element[1])][classified] += 1
+
+
+	for j in range(0,testClassValues.shape[0]):
+		confusionMat[j] = confusionMat[j]*100/testClassValues[j] 
+
+
 	accu = float(correctItems)/totalElements
 
-	print(accu)
+	#print(accu)
 
-	return accu, 0
+	return accu, confusionMat
 
 
 def naiveBayes(a):
@@ -212,6 +226,8 @@ def naiveBayesGeneric(a, m, n, disJoin, kVal):
 
 	pClass = np.zeros(10)
 	distinctVal = int(math.pow(2,m*n))
+
+
 
 	if disJoin == 1:
 		xLength = int(28/m)
@@ -296,14 +312,17 @@ def naiveBWrapper():
 
 	AccuracyValues = []
 
-	kValues = np.logspace(-1,1,10)
+	#kValues = np.logspace(-1,1,10)
+	kValues = [0.1]
+	featureSizeList = [(2,2,1), (2,4,1), (4,2,1), (4,4,1)]
 
-	
-	featureSizeList = [(2,2,1), (2,4,1), (4,2,1), (4,4,1), (2,2,0), (2,4,0), (4,2,0), (4,4,0), (2,3,0), (3,2,0), (3,3,0)]
+	featureSizeList1 = [(2,2,0), (2,4,0), (4,2,0), (4,4,0)]
 
+	featureSizeList2 = [(2,3,0), (3,2,0), (3,3,0)]
 
+	import time
 
-	for featureSize in featureSizeList:
+	for featureSize in featureSizeList2:
 		print(featureSize)
 		maxAccuracyVal = -1
 		finalConfusionMat = None
@@ -311,9 +330,28 @@ def naiveBWrapper():
 		for kVal in kValues:
 			print(kVal)
 
+			now = time.time()
+
 			naiveBayesGeneric(a, featureSize[0], featureSize[1], featureSize[2], kVal)
 
+			later = time.time()
+
+			difference = later - now
+
+			print("training time:" + str(difference))
+
+
 			accuracyValue, confusionMat =  findClassLabelGeneric(featureSize[0], featureSize[1], featureSize[2])
+
+			now = time.time()
+
+			later = time.time()
+
+			difference = later - now
+
+			print("testing time:" + str(difference))
+
+
 			AccuracyValues.append((kVal,accuracyValue))
 
 			if maxAccuracyVal < accuracyValue:
@@ -323,6 +361,7 @@ def naiveBWrapper():
 
 		print(maxAccuracyVal)
 		print(AccuracyValues)
+		print(confusionMat)
 
 def convertToPickle(fileName):
 
