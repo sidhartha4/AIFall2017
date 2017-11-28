@@ -134,7 +134,7 @@ def oddRatioMap(finalConfusionMat):
 
 		#cmap = mpl.cm.bwr
 
-		cmap = clr.LinearSegmentedColormap.from_list('yo', ['blue','yellow','red'], N=256)
+		cmap = clr.LinearSegmentedColormap.from_list('yo', ['red','yellow','blue'], N=256)
 
 		#cmap = clr.LinearSegmentedColormap.from_list()
 
@@ -315,7 +315,12 @@ def naiveBWrapper():
 		finaltestExamplesWithProbabilites = testExamplesWithProbabilites
 
 	print(maxAccuracyVal)	
-	print(finalConfusionMat)
+	#print(finalConfusionMat)
+	for ka in finalConfusionMat:
+		for ja in ka:
+			print(round(ja,2),end='\t')
+		print()
+
 
 	"""
 	for i in finaltestExamplesWithProbabilites:
@@ -325,7 +330,10 @@ def naiveBWrapper():
 		print(i[6])
 
 		for j in i[2]:
-			print(j)
+			stringPrint = ""
+			for kappa in j:
+				stringPrint = stringPrint + kappa
+			print(stringPrint)
 
 		print("--------------------------------------min---------------------------------------")
 		print(i[3])
@@ -333,8 +341,11 @@ def naiveBWrapper():
 		print(i[7])
 
 		for j in i[5]:
-			print(j)
-	"""
+			stringPrint = ""
+			for kappa in j:
+				stringPrint = stringPrint + kappa
+			print(stringPrint)
+	"""	
 	oddRatioMap(finalConfusionMat)
 
 	outfile = "finalConfusionMat.npy"

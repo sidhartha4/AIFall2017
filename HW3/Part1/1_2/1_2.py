@@ -173,6 +173,7 @@ def naiveBayes(a):
 		pClass[element[1]]  = pClass[element[1]]  + 1
 		totalElements = totalElements + 1
 		matVal = element[0]
+
 		for i in range(0, len(matVal)-1):
 			for j in range(0, len(matVal[i])-1):
 				valToAdd = i * 27 + j
@@ -227,8 +228,6 @@ def naiveBayesGeneric(a, m, n, disJoin, kVal):
 	pClass = np.zeros(10)
 	distinctVal = int(math.pow(2,m*n))
 
-
-
 	if disJoin == 1:
 		xLength = int(28/m)
 		yLength = int(28/n)
@@ -240,7 +239,7 @@ def naiveBayesGeneric(a, m, n, disJoin, kVal):
 		featureLabel = np.zeros((10, xLength*yLength, distinctVal))
 
 	totalElements = 0
-	#print(featureLabel.shape)
+	print(featureLabel.shape)
 	for element in a:
 
 		pClass[element[1]] += 1
@@ -261,10 +260,11 @@ def naiveBayesGeneric(a, m, n, disJoin, kVal):
 							totValK = totValK*2
 						else:
 							totValK = totValK*2 + 1
-					
+
 					valToAdd = i * int(28/n) + j
 					featureLabel[element[1]][valToAdd][totValK] += 1
-
+					#print(totValK)
+					#print(valToAdd)
 		else:
 
 			for i in range(0, len(matVal)-m+1):
@@ -282,7 +282,8 @@ def naiveBayesGeneric(a, m, n, disJoin, kVal):
 					
 					valToAdd = i * (len(matVal[i])-n+1) + j
 					featureLabel[element[1]][valToAdd][totValK] += 1
-
+					#print(totValK)
+					#print(valToAdd)
 				
 	for iterV in range(0,10):
 		featureLabel[iterV] = (featureLabel[iterV]+kVal) /(pClass[iterV]+ distinctVal *kVal)
@@ -313,7 +314,7 @@ def naiveBWrapper():
 	AccuracyValues = []
 
 	#kValues = np.logspace(-1,1,10)
-	kValues = [0.1]
+	kValues = [0.2]
 	featureSizeList = [(2,2,1), (2,4,1), (4,2,1), (4,4,1)]
 
 	featureSizeList1 = [(2,2,0), (2,4,0), (4,2,0), (4,4,0)]
@@ -341,9 +342,9 @@ def naiveBWrapper():
 			print("training time:" + str(difference))
 
 
-			accuracyValue, confusionMat =  findClassLabelGeneric(featureSize[0], featureSize[1], featureSize[2])
-
 			now = time.time()
+
+			accuracyValue, confusionMat =  findClassLabelGeneric(featureSize[0], featureSize[1], featureSize[2])
 
 			later = time.time()
 
@@ -361,7 +362,10 @@ def naiveBWrapper():
 
 		print(maxAccuracyVal)
 		print(AccuracyValues)
-		print(confusionMat)
+		for ka in confusionMat:
+			for ja in ka:
+				print(round(ja,2),end='\t')
+			print()
 
 def convertToPickle(fileName):
 
