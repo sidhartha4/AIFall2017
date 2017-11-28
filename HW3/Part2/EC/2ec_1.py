@@ -79,7 +79,7 @@ def naiveBayes(a):
                 else:
                     featureLabel[element[1]][valToAdd][1] += 1
 
-    kVal = 3
+    kVal = 10
 
     for iterV in range(0,2):
         #print(featureLabel[iterV])
@@ -118,19 +118,19 @@ def convertToPickle():
     mypath = "txt_yesno/training/"
     onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 
-    print(onlyfiles)
+    #print(onlyfiles)
 
     trainPair = []
     for i in onlyfiles:
         readFile = open(mypath+i,"r")
         labels = i[:-4].split('_')
-        print(labels)
+        #print(labels)
         content = readFile.readlines()
         example = []
         for j in range(8):
             example = []
             for k in range(25):
-                example.append(content[j][j*15+5:(j+1)*15])
+                example.append(content[j][j*15+5:(j+1)*15].rstrip())
             if labels[j] == '0':
                 tupleToAdd = (example, 0)
             else:
@@ -145,29 +145,35 @@ def convertToPickle():
     mypath = "txt_yesno/yes_test/"
     onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 
-    print(onlyfiles)
+    #print(onlyfiles)
 
     testPair = []
     for i in onlyfiles:
         readFile = open(mypath+i, "r")
         content = readFile.readlines()
-        testPair.append((content, 1))
+        example = []
+        for line in content:
+            example.append(line.rstrip())
+        testPair.append((example, 1))
 
 
     mypath = "txt_yesno/no_test/"
     onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 
-    print(onlyfiles)
+    #print(onlyfiles)
 
     for i in onlyfiles:
         readFile = open(mypath+i, "r")
         content = readFile.readlines()
-        testPair.append((content, 0))
+        example = []
+        for line in content:
+            example.append(line.rstrip())
+        testPair.append((example, 0))
 
 
     with open('testPair.json', 'w') as fp:
         json.dump(testPair, fp)
 
 if __name__ == "__main__":
-    convertToPickle()
+    #convertToPickle()
     naiveBWrapper()
