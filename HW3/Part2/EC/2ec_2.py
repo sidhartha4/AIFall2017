@@ -3,7 +3,7 @@ import pickle
 import json
 import numpy as np
 import math
-from numpy.linalg import inv
+from numpy.linalg import pinv
 
 
 
@@ -71,13 +71,17 @@ def solve(fileName):
         tmp = (ex - mean_no) * (ex - mean_no)[np.newaxis, :].T
         S += tmp
 
-    print(mean_yes)
-    print(mean_no)
-    print(S)
-    print(S.shape)
+    print((mean_yes - mean_no).shape)
+    print((mean_yes - mean_no)[np.newaxis, :].T.shape)
+    print(pinv(S).shape)
+    w = pinv(S).dot((mean_yes - mean_no)[np.newaxis, :].T)
+    print(w.shape)
+    w = w.reshape((1,250))
 
-    w = inv(S) * (mean_yes - mean_no)
-    print(w)
+    proj_yes = np.dot(w, mean_yes)
+    proj_no  = np.dot(w, mean_no)
+    print(proj_yes)
+    print(proj_no)
 
     yesContentTest = None
     with open(fileName + "/yes_test.txt") as f:
@@ -87,6 +91,9 @@ def solve(fileName):
     with open(fileName + "/no_test.txt") as f:
         noContentTest = f.readlines()
 
+
+    confusion = np.zeros((2,2))
+
     # test for yes
     testPair = []
     image = []
@@ -94,11 +101,20 @@ def solve(fileName):
         if i % 28 == 25 or i % 28 == 26 or i % 28 == 27:
             continue
 
-        image.append(yesContentTest[i][:-1]) 
+        for j in range(len(yesContentTest[i][:-1])):
+            if yesContentTest[i][j] == '%':
+                image.append(1)
+            else:
+                image.append(0)
 
         if i % 28 == 24:
-            tupleToAdd = (image, 1)
-            testPair.append(tupleToAdd)
+            cnt += 1
+            tmp = np.array(image)
+            side = np.dot(w, tmp)
+            if math.fabs(side - proj_yes) < math.fabs(side - proj_no):
+                confusion[0][0] += 1
+            else:
+                confusion[0][1] += 1
             image = []
 
     #test for no
@@ -106,13 +122,25 @@ def solve(fileName):
         if i % 28 == 25 or i % 28 == 26 or i % 28 == 27:
             continue
 
-        image.append(noContentTest[i][:-1]) 
+        for j in range(len(noContentTest[i][:-1])):
+            if noContentTest[i][j] == '%':
+                image.append(1)
+            else:
+                image.append(0)
 
         if i % 28 == 24:
-            tupleToAdd = (image, 0)
-            testPair.append(tupleToAdd)
+            cnt += 1
+            tmp = np.array(image)
+            side = np.dot(w, tmp)
+            if math.fabs(side - proj_no) < math.fabs(side - proj_yes):
+                confusion[1][1] += 1
+            else:
+                confusion[1][0] += 1
             image = []
 
+
+    print(np.trace(confusion)/np.sum(confusion))
+    print(confusion)
 
 
 
