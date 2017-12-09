@@ -35,7 +35,25 @@ def decode(state):
     return (ball_x, ball_y, velocity_x, velocity_y, paddle_height)
 
 
-def move(state, act, discrete):
+def get_discrete(state):
+    if state[0] > 1:
+        return (-1, -1, -1, -1, -1)
+    discreteb_x = math.floor(state[0] * grid_size)
+    discreteb_y = math.floor(state[1] * grid_size)
+    discretev_x = 0 if state[2] < 0 else 1 # -1 and 1
+    if math.fabs(state[3]) < 0.015: # 0, -1, and 1
+        discretev_y = 1
+    elif state[3] < 0:
+        discretev_y = 0
+    else:
+        discretev_y = 2
+    discrete_p = math.floor(12 * state[4] / (1-paddle_height))
+    if state[4] == 1-paddle_height:
+        discrete_p = 11
+    return (discreteb_x, discreteb_y, discretev_x, discretev_y, discrete_p)
+
+
+def move(state, act):
     velocity_x = state[2]
     velocity_y = state[3]
     ball_x = state[0] + velocity_x
@@ -65,31 +83,30 @@ def move(state, act, discrete):
     return ((ball_x, ball_y, velocity_x, velocity_y, paddle_y), bounce)
 
 
-def q_learn_agent(state):
-    if state == terminal:
-        Q[state][0] = r
-    return a
+def get_action(state, pre, discrete):
+    if discrete == 1:
+        # train model
+        if state[0] == -1:
+            Q[terminal][pre] = -1
+    else:
+        # test, get max action
+        biject = encode(state)
+        return np.argmax(Q[state])
 
 
 def pong_game(state, discrete):
     cnt = 0
+    pre_act = -1
     while True:
+        discrete_state = get_discrete(state)
         if discrete == 1:
-            discreteb_x = math.floor(state[0] * grid_size)
-            discreteb_y = math.floor(state[1] * grid_size)
-            discretev_x = 0 if state[2] < 0 else 1 # -1 and 1
-            if math.fabs(state[3]) < 0.015: # 0, -1, and 1
-                discretev_y = 1
-            elif state[3] < 0:
-                discretev_y = 0
-            else:
-                discretev_y = 2
-            discrete_p = math.floor(12 * state[4] / (1-paddle_height))
-            if state[4] == 1-paddle_height:
-                discrete_p = 11
+            # train model
+            if discrete_state[0] == -1:
         if state[0] > 1:
             break
-        (state, bounce) = move(state, act, discrete)
+        nxt_act = get_action(discrete_state, pre_act, discrete)
+        (state, bounce) = move(state, nxt_act)
+        pre_act = nxt_act
         cnt += bounce
     return cnt
 
@@ -98,8 +115,10 @@ def pong_game(state, discrete):
 initial_state = (0.5, 0.5, 0.03, 0.01, 0.5-paddle_height/2)
 
 # q train on discrete case
+train_bounces = []
 for i in range(1e5):
-    pong_game(initial_state, 1)
+    val = pong_game(initial_state, 1)
+    train_bounces.append(val)
 
 # check error on continuous case
 num = 0
