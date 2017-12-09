@@ -30,6 +30,7 @@ def move(state, act):
             velocity_x /= math.fabs(velocity_x)
         if math.fabs(velocity_y) > 1:
             velocity_y /= math.fabs(velocity_y)
+    return (ball_x, ball_y, velocity_x, velocity_y, paddle_y)
 
 
 def pong_game(state):
