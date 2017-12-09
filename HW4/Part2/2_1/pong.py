@@ -8,7 +8,9 @@ action = [0, 0.04, -0.04] # change in paddle y coordinate
 grid_size = 12
 
 Q = np.zeros((11111, 2)) # Q values
+N = np.zeros((11111, 2)) # N values
 
+terminal = 11110
 alpha = 0 # learning rate
 gamma = 0 # discount factor
 r = 0 # reward
@@ -20,6 +22,7 @@ def encode(ball_x, ball_y, velocity_x, velocity_y, paddle_height):
     state = (ball_state*6 + velocity_state)*12 + paddle_height
     return state
 
+
 def decode(state):
     paddle_height = state % 12
     state /= 12
@@ -30,6 +33,7 @@ def decode(state):
     ball_y = state % grid_size
     ball_x = state / 12
     return (ball_x, ball_y, velocity_x, velocity_y, paddle_height)
+
 
 def move(state, act, discrete):
     velocity_x = state[2]
@@ -61,9 +65,15 @@ def move(state, act, discrete):
     return ((ball_x, ball_y, velocity_x, velocity_y, paddle_y), bounce)
 
 
+def q_learn_agent(state):
+    if state == terminal:
+        Q[state][0] = r
+    return a
+
+
 def pong_game(state, discrete):
     cnt = 0
-    while state[0] <= 1:
+    while True:
         if discrete == 1:
             discreteb_x = math.floor(state[0] * grid_size)
             discreteb_y = math.floor(state[1] * grid_size)
@@ -77,9 +87,12 @@ def pong_game(state, discrete):
             discrete_p = math.floor(12 * state[4] / (1-paddle_height))
             if state[4] == 1-paddle_height:
                 discrete_p = 11
+        if state[0] > 1:
+            break
         (state, bounce) = move(state, act, discrete)
         cnt += bounce
     return cnt
+
 
 # ballx, bally, velocityx, velocityy, paddley
 initial_state = (0.5, 0.5, 0.03, 0.01, 0.5-paddle_height/2)
