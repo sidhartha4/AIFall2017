@@ -99,12 +99,9 @@ def pong_game(state, discrete):
     pre_act = -1
     while True:
         discrete_state = get_discrete(state)
-        if discrete == 1:
-            # train model
-            if discrete_state[0] == -1:
+        nxt_act = get_action(discrete_state, pre_act, discrete)
         if state[0] > 1:
             break
-        nxt_act = get_action(discrete_state, pre_act, discrete)
         (state, bounce) = move(state, nxt_act)
         pre_act = nxt_act
         cnt += bounce
