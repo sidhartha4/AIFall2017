@@ -12,12 +12,12 @@ gamma = 0 #discount factor
 r = 0 #reward
 C = 0
 
-def move(state, act):
+def move(state, act, discrete):
     velocity_x = state[2]
     velocity_y = state[3]
     ball_x = state[0] + velocity_x
     ball_y = state[1] + velocity_y
-    paddley_y = min(max(0, state[4]+action[act]), 1-paddle_height)
+    paddle_y = min(max(0, state[4]+action[act]), 1-paddle_height)
     bounce = 0
     if ball_y < 0:
         ball_y *= -1
@@ -42,21 +42,28 @@ def move(state, act):
     return ((ball_x, ball_y, velocity_x, velocity_y, paddle_y), bounce)
 
 
-def pong_game(state):
+def pong_game(state, discrete):
     cnt = 0
     while state[0] <= 1:
-        (state, bounce) = move(state, act)
+        if discrete == 1:
+            state[0] /= grid_size
+        (state, bounce) = move(state, act, discrete)
         cnt += bounce
     return cnt
 
 # ballx, bally, velocityx, velocityy, paddley
 initial_state = (0.5, 0.5, 0.03, 0.01, 0.5-paddle_height/2)
 
+# q train on discrete case
+for i in range(1e5):
+    pong_game(initial_state, 1)
+
+# check error on continuous case
 num = 0
 total = 0.0
 bounces = []
 while num == 0 or total/num < 10.0:
-    val = pong_game(initial_state)
+    val = pong_game(initial_state, 0)
     bounces.append(val)
     num += 1
     total += val
