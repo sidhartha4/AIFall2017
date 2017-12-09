@@ -4,6 +4,7 @@ import math
 paddle_height = 0.2
 paddle_x = 1
 action = [0, 0.04, -0.04] # change in paddle y coordinate
+grid_size = 12
 
 def move(state, act):
     velocity_x = state[2]
