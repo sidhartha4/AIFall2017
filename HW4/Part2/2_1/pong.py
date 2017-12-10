@@ -5,17 +5,18 @@ import numpy as np
 paddle_height = 0.2
 paddle_x = 1
 action = [0, 0.04, -0.04] # change in paddle y coordinate
-grid_size = 12
-num_iter = 100 # number of iterations to train on, used for debugging
+grid_size = 12.0
+num_iter = int(1e1) # number of iterations to train on, used for debugging
+run = False
 
 Q = np.zeros((11111, 3)) # Q values
 N = np.zeros((11111, 3), dtype=np.int) # N values
 
 terminal = 11110
-C = 100 # part of learning rate
-gamma = 1 # discount factor
-upto = 10 # try this many times for each
-maxr = 15 # reward for this
+C = 100.0 # part of learning rate
+gamma = 1.0 # discount factor
+upto = 2 # try this many times for each
+maxr = 2 # reward for this
 
 
 def encode(ball_x, ball_y, velocity_x, velocity_y, paddle_height):
@@ -38,7 +39,7 @@ def decode(state):
 
 
 def get_discrete(state):
-    if state[0] > 1:
+    if state[0] > paddle_x:
         return (-1, -1, -1, -1, -1)
     discreteb_x = math.floor(state[0] * grid_size)
     discreteb_y = math.floor(state[1] * grid_size)
@@ -71,7 +72,7 @@ def move(state, act):
     if ball_x < 0:
         ball_x *= -1
         velocity_x *= -1
-    if ball_x > 1 and ball_y >= paddle_y and ball_y <= paddle_y+paddle_height:
+    if ball_x > paddle_x and ball_y >= paddle_y and ball_y <= paddle_y+paddle_height:
         ball_x = 2*paddle_x - ball_x
         velocity_x = -velocity_x + random.randrange(-15, 15)/1000.0
         velocity_y += random.randrange(-3, 3)/100.0
@@ -92,46 +93,46 @@ def f(value, times):
         return value
 
 
-def get_action(state, pre, discrete, reward):
+def get_action(state, discrete, reward):
+    if state[0] == -1:
+        return -1
+    biject = encode(*state)
     if discrete == 1:
         # train model
-        if state[0] == -1:
-            Q[terminal][pre] = -1
-            return -1
-        biject = encode(*state)
         arr = np.zeros(3, dtype=np.int)
         arr_bij = np.zeros(3, dtype=np.int)
-        if pre != -1:
-            N[biject][pre] += 1
-            for i in range(3):
-                (nxt, garb) = move(state, i)
-                arr_bij[i] = encode(*nxt)
-                arr[i] = Q[arr_bij[i]][i]
-            Q[biject][pre] += C/(C+N[biject][pre]) * (reward + gamma * np.amax(arr) - Q[biject][pre]);
+        for i in range(3):
+            (nxt, garb) = move(state, i)
+            arr_bij[i] = encode(*nxt)
+            arr[i] = Q[arr_bij[i]][i]
+        mx = np.amax(arr)
         for i in range(3):
             arr[i] = f(arr[i], N[arr_bij[i]][i])
-        return np.argmax(arr)
+        action = np.argmax(arr)
+        N[biject][action] += 1
+        Q[biject][action] += C/(C+float(N[biject][action])) * (float(reward) + gamma * mx - Q[biject][action]);
+        return action
     else:
         # test, get max action
-        if state[0] == -1:
-            return -1
-        biject = encode(*state)
         return np.argmax(Q[biject])
 
 
 def pong_game(state, discrete):
     cnt = 0
-    pre_act = -1
     reward = 0
+    pre_act = -1
     while True:
+        print(state)
         discrete_state = get_discrete(state)
-        nxt_act = get_action(discrete_state, pre_act, discrete, reward)
+        print(discrete_state)
+        nxt_act = get_action(discrete_state, discrete, reward)
         if nxt_act == -1:
             break
         (state, bounce) = move(state, nxt_act)
         pre_act = nxt_act
         cnt += bounce
         reward = bounce
+    Q[encode(*state)][pre_act] = -1
     return cnt
 
 
@@ -145,16 +146,18 @@ for i in range(num_iter):
     train_bounces.append(val)
 train_bounces = np.array(train_bounces)
 print(train_bounces)
+print(np.amax(train_bounces))
 
 # check error on continuous case
 num = 0
 total = 0.0
 bounces = []
-while num == 0 or total/num < 10.0:
+while run and (num == 0 or total/num < 10.0):
     val = pong_game(initial_state, 0)
     bounces.append(val)
     num += 1
     total += val
 
 print("num: ", num)
-print("average: ", total/num)
+if num != 0:
+    print("average: ", total/num)
