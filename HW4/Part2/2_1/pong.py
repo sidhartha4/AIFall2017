@@ -9,14 +9,14 @@ action = [0.0, 0.04, -0.04] # change in paddle y coordinate
 grid_size = 12.0
 num_iter = int(1e3) # number of iterations to train on, used for debugging
 run = False
+terminal = int(grid_size * grid_size * 2 * 3 * 12 + 1)
 
-Q = np.zeros((11111, 3)) # Q values
-N = np.zeros((11111, 3), dtype=np.int) # N values
+Q = np.zeros((terminal+5, 3)) # Q values
+N = np.zeros((terminal+5, 3), dtype=np.int) # N values
 
-terminal = 11110
-C = 100.0 # part of learning rate
+C = 50.0 # part of learning rate
 gamma = 1.0 # discount factor
-upto = 10 # try this many times for each
+upto = 5 # try this many times for each
 maxr = 10 # reward for this
 
 
@@ -25,20 +25,6 @@ def encode(ball_x, ball_y, velocity_x, velocity_y, paddle_y):
     velocity_state = velocity_x * 3 + velocity_y
     state = (ball_state*6 + velocity_state)*12 + paddle_y
     return int(state)
-
-
-'''
-def decode(state):
-    paddle_height = state % 12
-    state /= 12
-    velocity_state = state % 6
-    velocity_y = velocity_state % 3
-    velocity_x = velocity_state / 3
-    state /= 6
-    ball_y = state % grid_size
-    ball_x = state / 12
-    return (ball_x, ball_y, velocity_x, velocity_y, paddle_height)
-    '''
 
 
 def get_discrete(state):
@@ -53,9 +39,9 @@ def get_discrete(state):
         discretev_y = 0
     else:
         discretev_y = 2
-    discrete_p = math.floor(12 * state[4] / (1-paddle_height))
+    discrete_p = math.floor(grid_size * state[4] / (1-paddle_height))
     if state[4] == 1-paddle_height:
-        discrete_p = 11
+        discrete_p = grid_size-1
     return (discreteb_x, discreteb_y, discretev_x, discretev_y, discrete_p)
 
 
@@ -76,9 +62,9 @@ def move(state, act):
         ball_x *= -1
         velocity_x *= -1
     if ball_x > paddle_x and ball_y >= paddle_y and ball_y <= paddle_y+paddle_height:
-        ball_x = 2*paddle_x - ball_x
-        velocity_x = -velocity_x + random.randrange(-15, 15)/1000.0
-        velocity_y += random.randrange(-3, 3)/100.0
+        ball_x = 2.0*paddle_x - ball_x
+        velocity_x = -velocity_x + float(random.randrange(-15, 15))/1000.0
+        velocity_y += float(random.randrange(-3, 3))/100.0
         bounce = 1
         if math.fabs(velocity_x) < 0.03:
             velocity_x *= 0.03 / math.fabs(velocity_x)
@@ -92,10 +78,9 @@ def move(state, act):
 def pong_game(state, discrete):
     cnt = 0
     arr = np.zeros(3, dtype = np.int)
-    biject = encode(*state)
+    discrete_state = get_discrete(state)
+    biject = encode(*discrete_state)
     while state[0] <= paddle_x:
-        # get discrete state
-        discrete_state = get_discrete(state)
         '''
         print("state:", state)
         print("discrete_state:", discrete_state)
@@ -115,12 +100,13 @@ def pong_game(state, discrete):
             nxt_act = np.argmax(Q[biject])
         # get next state
         (state, bounce) = move(state, nxt_act)
+        discrete_state = get_discrete(state)
+        new_bij = encode(*discrete_state)
         if discrete == 1:
             # update number times visited and Q value
             N[biject][nxt_act] += 1
-            new_bij = encode(*state)
             Q[biject][nxt_act] += C/(C+float(N[biject][nxt_act])) * (float(bounce) + gamma * np.amax(Q[new_bij]) - Q[biject][nxt_act]);
-            biject = new_bij
+        biject = new_bij
         cnt += bounce
     return cnt
 
