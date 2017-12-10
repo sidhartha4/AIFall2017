@@ -7,7 +7,7 @@ paddle_height = 0.2
 paddle_x = 1.0
 action = [0.0, 0.04, -0.04] # change in paddle y coordinate
 grid_size = 12.0
-num_iter = int(1e5) # number of iterations to train on, used for debugging
+num_iter = int(1e3) # number of iterations to train on, used for debugging
 run = False
 
 Q = np.zeros((11111, 3)) # Q values
@@ -16,7 +16,7 @@ N = np.zeros((11111, 3), dtype=np.int) # N values
 terminal = 11110
 C = 100.0 # part of learning rate
 gamma = 1.0 # discount factor
-upto = 5 # try this many times for each
+upto = 10 # try this many times for each
 maxr = 10 # reward for this
 
 

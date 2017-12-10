@@ -1,5 +1,5 @@
-[0 0 0 ..., 1 3 1]
-8
-training avg: 1.35297
+[0 0 1 ..., 1 1 1]
+7
+training avg: 1.21385
 ('num: ', 0)
-total time: 218.3294909 seconds
+total time: 35.8059949875 seconds
