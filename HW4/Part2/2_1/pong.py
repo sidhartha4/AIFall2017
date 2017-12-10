@@ -9,7 +9,7 @@ grid_size = 12
 num_iter = 100 # number of iterations to train on, used for debugging
 
 Q = np.zeros((11111, 3)) # Q values
-N = np.zeros((11111, 3)) # N values
+N = np.zeros((11111, 3), dtype=np.int) # N values
 
 terminal = 11110
 C = 100 # part of learning rate
@@ -22,7 +22,7 @@ def encode(ball_x, ball_y, velocity_x, velocity_y, paddle_height):
     ball_state = ball_x * grid_size + ball_y
     velocity_state = velocity_x * 3 + velocity_y
     state = (ball_state*6 + velocity_state)*12 + paddle_height
-    return state
+    return int(state)
 
 
 def decode(state):
@@ -73,8 +73,8 @@ def move(state, act):
         velocity_x *= -1
     if ball_x > 1 and ball_y >= paddle_y and ball_y <= paddle_y+paddle_height:
         ball_x = 2*paddle_x - ball_x
-        velocity_x = -velocity_x + random.randrange(-0.015, 0.015)
-        velocity_y += random.randrange(-0.03, 0.03)
+        velocity_x = -velocity_x + random.randrange(-15, 15)/1000.0
+        velocity_y += random.randrange(-3, 3)/100.0
         bounce = 1
         if math.fabs(velocity_x) < 0.03:
             velocity_x *= 0.03 / math.fabs(velocity_x)
@@ -99,13 +99,13 @@ def get_action(state, pre, discrete, reward):
             Q[terminal][pre] = -1
             return -1
         biject = encode(*state)
-        arr = np.zeros(3)
-        arr_bij = np.zeros(3)
+        arr = np.zeros(3, dtype=np.int)
+        arr_bij = np.zeros(3, dtype=np.int)
         if pre != -1:
             N[biject][pre] += 1
             for i in range(3):
                 (nxt, garb) = move(state, i)
-                arr_bij[i] = biject(*nxt)
+                arr_bij[i] = encode(*nxt)
                 arr[i] = Q[arr_bij[i]][i]
             Q[biject][pre] += C/(C+N[biject][pre]) * (reward + gamma * np.amax(arr) - Q[biject][pre]);
         for i in range(3):
@@ -113,6 +113,8 @@ def get_action(state, pre, discrete, reward):
         return np.argmax(arr)
     else:
         # test, get max action
+        if state[0] == -1:
+            return -1
         biject = encode(*state)
         return np.argmax(Q[biject])
 
