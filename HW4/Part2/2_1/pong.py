@@ -87,31 +87,21 @@ def move(state, act):
 
 
 def f(value, times):
+    print("times:", times)
     if times < upto:
         return maxr
     else:
         return value
 
 
-def get_action(state, discrete, reward):
-    if state[0] == -1:
-        return -1
-    biject = encode(*state)
+def get_action(state, biject, discrete):
     if discrete == 1:
         # train model
         arr = np.zeros(3, dtype=np.int)
-        arr_bij = np.zeros(3, dtype=np.int)
         for i in range(3):
-            (nxt, garb) = move(state, i)
-            arr_bij[i] = encode(*nxt)
-            arr[i] = Q[arr_bij[i]][i]
-        mx = np.amax(arr)
-        for i in range(3):
-            arr[i] = f(arr[i], N[arr_bij[i]][i])
-        action = np.argmax(arr)
-        N[biject][action] += 1
-        Q[biject][action] += C/(C+float(N[biject][action])) * (float(reward) + gamma * mx - Q[biject][action]);
-        return action
+            arr[i] = f(Q[biject][i], N[biject][i])
+        print(state, arr)
+        return np.argmax(arr)
     else:
         # test, get max action
         return np.argmax(Q[biject])
@@ -119,20 +109,26 @@ def get_action(state, discrete, reward):
 
 def pong_game(state, discrete):
     cnt = 0
-    reward = 0
-    pre_act = -1
-    while True:
-        print(state)
+    arr = np.zeros(3, dtype = np.int)
+    biject = encode(*state)
+    while state[0] <= paddle_x:
+        # get discrete state
         discrete_state = get_discrete(state)
-        print(discrete_state)
-        nxt_act = get_action(discrete_state, discrete, reward)
-        if nxt_act == -1:
-            break
+        print("state:", state)
+        print("discrete_state:", discrete_state)
+        print("biject:", biject)
+        # get next action based
+        nxt_act = get_action(discrete_state, biject, discrete)
+        # get next state
         (state, bounce) = move(state, nxt_act)
-        pre_act = nxt_act
+        if discrete == 1:
+            # update number times visited and Q value
+            N[biject][nxt_act] += 1
+            print("update", biject, nxt_act, N[biject][nxt_act])
+            new_bij = encode(*state)
+            Q[biject][nxt_act] += C/(C+float(N[biject][nxt_act])) * (float(bounce) + gamma * np.amax(Q[new_bij]) - Q[biject][nxt_act]);
+            biject = new_bij
         cnt += bounce
-        reward = bounce
-    Q[encode(*state)][pre_act] = -1
     return cnt
 
 
@@ -140,8 +136,11 @@ def pong_game(state, discrete):
 initial_state = (0.5, 0.5, 0.03, 0.01, 0.5-paddle_height/2)
 
 # q train on discrete case
+for i in range(3):
+    Q[terminal][i] = -1
 train_bounces = []
 for i in range(num_iter):
+    print("Game number "+ str(i))
     val = pong_game(initial_state, 1)
     train_bounces.append(val)
 train_bounces = np.array(train_bounces)
