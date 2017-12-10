@@ -89,25 +89,6 @@ def move(state, act):
     return ((ball_x, ball_y, velocity_x, velocity_y, paddle_y), bounce)
 
 
-def f(value, times):
-    if times < upto:
-        return maxr
-    else:
-        return value
-
-
-def get_action(state, biject, discrete):
-    if discrete == 1:
-        # train model
-        arr = np.zeros(3, dtype=np.int)
-        for i in range(3):
-            arr[i] = f(Q[biject][i], N[biject][i])
-        return np.random.choice(np.flatnonzero(arr == np.amax(arr)))
-    else:
-        # test, get max action
-        return np.argmax(Q[biject])
-
-
 def pong_game(state, discrete):
     cnt = 0
     arr = np.zeros(3, dtype = np.int)
@@ -120,8 +101,18 @@ def pong_game(state, discrete):
         print("discrete_state:", discrete_state)
         print("biject:", biject)
         '''
-        # get next action based
-        nxt_act = get_action(discrete_state, biject, discrete)
+        # get next action
+        if discrete == 1:
+            # train model
+            for i in range(3):
+                if N[biject][i] < upto:
+                    arr[i] = maxr
+                else:
+                    arr[i] = Q[biject][i]
+            nxt_act = np.random.choice(np.flatnonzero(arr == np.amax(arr)))
+        else:
+            # test, get max action
+            nxt_act = np.argmax(Q[biject])
         # get next state
         (state, bounce) = move(state, nxt_act)
         if discrete == 1:
