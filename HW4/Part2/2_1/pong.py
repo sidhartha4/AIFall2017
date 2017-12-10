@@ -7,7 +7,7 @@ paddle_height = 0.2
 paddle_x = 1.0
 action = [0.0, 0.04, -0.04] # change in paddle y coordinate
 grid_size = 12.0
-num_iter = int(1e5) # number of iterations to train on, used for debugging
+num_iter = int(1e4) # number of iterations to train on, used for debugging
 run = False
 terminal = int(grid_size * grid_size * 2 * 3 * 12 + 1)
 
@@ -15,23 +15,16 @@ Q = np.zeros((terminal+5, 3)) # Q values
 N = np.zeros((terminal+5, 3), dtype=np.int) # N values
 
 C = 120.0 # part of learning rate
-gamma = 0.999 # discount factor
-upto = 3 # try this many times for each
+gamma = 1-1e-5 # discount factor
+upto = 5 # try this many times for each
 maxr = 1.0 # reward for this
 
 
 def encode(ball_x, ball_y, velocity_x, velocity_y, paddle_y):
-    ball_state = ball_x * grid_size + ball_y
-    velocity_state = velocity_x * 3 + velocity_y
-    state = (ball_state*6 + velocity_state)*grid_size + paddle_y
-    return int(state)
-
-
-def get_discrete(ball_x, ball_y, velocity_x, velocity_y, paddle_y):
     if ball_x > paddle_x:
-        return (-1, -1, -1, -1, -1)
+        return terminal
     discreteb_x = min(math.floor(ball_x * grid_size), grid_size-1)
-    discreteb_y = min(math.floor(vall_y * grid_size), grid_size-1)
+    discreteb_y = min(math.floor(ball_y * grid_size), grid_size-1)
     discretev_x = 0 if velocity_x < 0 else 1 # -1 and 1
     if math.fabs(velocity_y) < 0.015: # 0, -1, and 1
         discretev_y = 1
@@ -42,7 +35,11 @@ def get_discrete(ball_x, ball_y, velocity_x, velocity_y, paddle_y):
     discrete_p = math.floor(grid_size * paddle_y / (1-paddle_height))
     if paddle_y == 1-paddle_height:
         discrete_p = grid_size-1
-    return (discreteb_x, discreteb_y, discretev_x, discretev_y, discrete_p)
+    discreteb_x, discreteb_y, discretev_x, discretev_y, discrete_p
+    ball_state = discreteb_x * grid_size + discreteb_y
+    velocity_state = discretev_x * 3 + discretev_y
+    state = (ball_state*6 + velocity_state)*grid_size + discrete_p
+    return int(state)
 
 
 def move(ball_x, ball_y, velocity_x, velocity_y, paddle_y, act):
@@ -73,12 +70,11 @@ def move(ball_x, ball_y, velocity_x, velocity_y, paddle_y, act):
     return ball_x, ball_y, velocity_x, velocity_y, paddle_y, bounce
 
 
-def pong_game(state, discrete):
+def pong_game(ball_x, ball_y, velocity_x, velocity_y, paddle_y, discrete):
     cnt = 0
     arr = np.zeros(3, dtype = np.int)
-    discrete_state = get_discrete(state)
-    biject = encode(*discrete_state)
-    while state[0] <= paddle_x:
+    biject = encode(ball_x, ball_y, velocity_x, velocity_y, paddle_y)
+    while ball_x <= paddle_x:
         '''
         print("state:", state)
         print("discrete_state:", discrete_state)
@@ -97,9 +93,8 @@ def pong_game(state, discrete):
             # test, get max action
             nxt_act = np.argmax(Q[biject])
         # get next state
-        (state, bounce) = move(state, nxt_act)
-        discrete_state = get_discrete(state)
-        new_bij = encode(*discrete_state)
+        ball_x, ball_y, velocity_x, velocity_y, paddle_y, bounce = move(ball_x, ball_y, velocity_x, velocity_y, paddle_y, nxt_act)
+        new_bij = encode(ball_x, ball_y, velocity_x, velocity_y, paddle_y)
         if discrete == 1:
             # update number times visited and Q value
             N[biject][nxt_act] += 1
@@ -110,15 +105,12 @@ def pong_game(state, discrete):
 
 
 start_time = time.time()
-# ball_x, ball_y, velocity_x, velocity_y, paddle_y
-initial_state = (0.5, 0.5, 0.03, 0.01, 0.5-paddle_height/2)
-
 # q train on discrete case
 for i in range(3):
     Q[terminal][i] = -1
 train_bounces = []
 for i in range(num_iter):
-    val = pong_game(initial_state, 1)
+    val = pong_game(0.5, 0.5, 0.03, 0.01, 0.5-paddle_height/2, 1)
     # print("Game number "+ str(i) + ": " + str(val))
     train_bounces.append(val)
 train_bounces = np.array(train_bounces)
