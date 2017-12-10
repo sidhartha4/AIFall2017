@@ -7,7 +7,7 @@ paddle_height = 0.2
 paddle_x = 1.0
 action = [0.0, 0.04, -0.04] # change in paddle y coordinate
 grid_size = 12.0
-num_iter = int(1e3) # number of iterations to train on, used for debugging
+num_iter = int(1e5) # number of iterations to train on, used for debugging
 run = False
 terminal = int(grid_size * grid_size * 2 * 3 * 12 + 1)
 
@@ -30,8 +30,8 @@ def encode(ball_x, ball_y, velocity_x, velocity_y, paddle_y):
 def get_discrete(state):
     if state[0] > paddle_x:
         return (-1, -1, -1, -1, -1)
-    discreteb_x = math.floor(state[0] * grid_size)
-    discreteb_y = math.floor(state[1] * grid_size)
+    discreteb_x = min(math.floor(state[0] * grid_size), 11)
+    discreteb_y = min(math.floor(state[1] * grid_size), 11)
     discretev_x = 0 if state[2] < 0 else 1 # -1 and 1
     if math.fabs(state[3]) < 0.015: # 0, -1, and 1
         discretev_y = 1
