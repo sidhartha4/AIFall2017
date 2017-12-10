@@ -7,7 +7,7 @@ paddle_height = 0.2
 paddle_x = 1.0
 action = [0.0, 0.04, -0.04] # change in paddle y coordinate
 grid_size = 12.0
-num_iter = int(1e4) # number of iterations to train on, used for debugging
+num_iter = int(1e5) # number of iterations to train on, used for debugging
 run = False
 terminal = int(grid_size * grid_size * 2 * 3 * 12 + 1)
 
@@ -17,7 +17,7 @@ N = np.zeros((terminal+5, 3), dtype=np.int) # N values
 C = 120.0 # part of learning rate
 gamma = 1-1e-5 # discount factor
 upto = 5 # try this many times for each
-maxr = 1.0 # reward for this
+maxr = 1e9 # reward for this
 
 
 def encode(ball_x, ball_y, velocity_x, velocity_y, paddle_y):
