@@ -27,30 +27,28 @@ def encode(ball_x, ball_y, velocity_x, velocity_y, paddle_y):
     return int(state)
 
 
-def get_discrete(state):
-    if state[0] > paddle_x:
+def get_discrete(ball_x, ball_y, velocity_x, velocity_y, paddle_y):
+    if ball_x > paddle_x:
         return (-1, -1, -1, -1, -1)
-    discreteb_x = min(math.floor(state[0] * grid_size), grid_size-1)
-    discreteb_y = min(math.floor(state[1] * grid_size), grid_size-1)
-    discretev_x = 0 if state[2] < 0 else 1 # -1 and 1
-    if math.fabs(state[3]) < 0.015: # 0, -1, and 1
+    discreteb_x = min(math.floor(ball_x * grid_size), grid_size-1)
+    discreteb_y = min(math.floor(vall_y * grid_size), grid_size-1)
+    discretev_x = 0 if velocity_x < 0 else 1 # -1 and 1
+    if math.fabs(velocity_y) < 0.015: # 0, -1, and 1
         discretev_y = 1
-    elif state[3] < 0:
+    elif velocity_y < 0:
         discretev_y = 0
     else:
         discretev_y = 2
-    discrete_p = math.floor(grid_size * state[4] / (1-paddle_height))
-    if state[4] == 1-paddle_height:
+    discrete_p = math.floor(grid_size * paddle_y / (1-paddle_height))
+    if paddle_y == 1-paddle_height:
         discrete_p = grid_size-1
     return (discreteb_x, discreteb_y, discretev_x, discretev_y, discrete_p)
 
 
-def move(state, act):
-    velocity_x = state[2]
-    velocity_y = state[3]
-    ball_x = state[0] + velocity_x
-    ball_y = state[1] + velocity_y
-    paddle_y = min(max(0, state[4]+action[act]), 1-paddle_height)
+def move(ball_x, ball_y, velocity_x, velocity_y, paddle_y, act):
+    ball_x += velocity_x
+    ball_y += velocity_y
+    paddle_y = min(max(0, paddle_y+action[act]), 1-paddle_height)
     bounce = 0
     if ball_y < 0:
         ball_y *= -1
@@ -72,7 +70,7 @@ def move(state, act):
             velocity_x = -1 if velocity_x < 0 else 1
         if math.fabs(velocity_y) > 1:
             velocity_y = -1 if velocity_y < 0 else 1
-    return ((ball_x, ball_y, velocity_x, velocity_y, paddle_y), bounce)
+    return ball_x, ball_y, velocity_x, velocity_y, paddle_y, bounce
 
 
 def pong_game(state, discrete):
