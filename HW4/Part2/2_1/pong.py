@@ -14,24 +14,24 @@ terminal = int(grid_size * grid_size * 2 * 3 * 12 + 1)
 Q = np.zeros((terminal+5, 3)) # Q values
 N = np.zeros((terminal+5, 3), dtype=np.int) # N values
 
-C = 50.0 # part of learning rate
-gamma = 1.0 # discount factor
-upto = 5 # try this many times for each
-maxr = 10 # reward for this
+C = 120.0 # part of learning rate
+gamma = 0.999 # discount factor
+upto = 3 # try this many times for each
+maxr = 1.0 # reward for this
 
 
 def encode(ball_x, ball_y, velocity_x, velocity_y, paddle_y):
     ball_state = ball_x * grid_size + ball_y
     velocity_state = velocity_x * 3 + velocity_y
-    state = (ball_state*6 + velocity_state)*12 + paddle_y
+    state = (ball_state*6 + velocity_state)*grid_size + paddle_y
     return int(state)
 
 
 def get_discrete(state):
     if state[0] > paddle_x:
         return (-1, -1, -1, -1, -1)
-    discreteb_x = min(math.floor(state[0] * grid_size), 11)
-    discreteb_y = min(math.floor(state[1] * grid_size), 11)
+    discreteb_x = min(math.floor(state[0] * grid_size), grid_size-1)
+    discreteb_y = min(math.floor(state[1] * grid_size), grid_size-1)
     discretev_x = 0 if state[2] < 0 else 1 # -1 and 1
     if math.fabs(state[3]) < 0.015: # 0, -1, and 1
         discretev_y = 1
@@ -69,9 +69,9 @@ def move(state, act):
         if math.fabs(velocity_x) < 0.03:
             velocity_x *= 0.03 / math.fabs(velocity_x)
         if math.fabs(velocity_x) > 1:
-            velocity_x /= math.fabs(velocity_x)
+            velocity_x = -1 if velocity_x < 0 else 1
         if math.fabs(velocity_y) > 1:
-            velocity_y /= math.fabs(velocity_y)
+            velocity_y = -1 if velocity_y < 0 else 1
     return ((ball_x, ball_y, velocity_x, velocity_y, paddle_y), bounce)
 
 
@@ -124,8 +124,9 @@ for i in range(num_iter):
     # print("Game number "+ str(i) + ": " + str(val))
     train_bounces.append(val)
 train_bounces = np.array(train_bounces)
+np.set_printoptions(threshold = np.inf)
 print(train_bounces)
-print(np.amax(train_bounces))
+print("max bounces: " + str(np.amax(train_bounces)))
 print("training avg: " + str(float(np.sum(train_bounces)) / num_iter))
 
 # check error on continuous case
