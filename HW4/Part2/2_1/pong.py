@@ -8,14 +8,15 @@ action = [0, 0.04, -0.04] # change in paddle y coordinate
 grid_size = 12
 num_iter = 100 # number of iterations to train on, used for debugging
 
-Q = np.zeros((11111, 2)) # Q values
-N = np.zeros((11111, 2)) # N values
+Q = np.zeros((11111, 3)) # Q values
+N = np.zeros((11111, 3)) # N values
 
 terminal = 11110
 C = 100 # part of learning rate
 gamma = 1 # discount factor
 upto = 10 # try this many times for each
 maxr = 15 # reward for this
+
 
 def encode(ball_x, ball_y, velocity_x, velocity_y, paddle_height):
     ball_state = ball_x * grid_size + ball_y
@@ -132,7 +133,7 @@ def pong_game(state, discrete):
     return cnt
 
 
-# ballx, bally, velocityx, velocityy, paddley
+# ball_x, ball_y, velocity_x, velocity_y, paddle_y
 initial_state = (0.5, 0.5, 0.03, 0.01, 0.5-paddle_height/2)
 
 # q train on discrete case
