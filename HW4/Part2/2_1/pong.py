@@ -13,8 +13,8 @@ terminal = int(grid_size * grid_size * 2 * 3 * 12 + 1)
 Q = np.zeros((terminal+5, 3)) # Q values
 N = np.zeros((terminal+5, 3), dtype=np.int) # N values
 
-C = 100.0 # part of learning rate
-gamma = 1-1e-5 # discount factor
+C = 50.0 # part of learning rate
+gamma = 0.75 # discount factor
 upto = 5 # try this many times for each
 maxr = 1e9 # reward for this
 
@@ -124,8 +124,9 @@ for i in xrange(1000):
     val = pong_game(0.5, 0.5, 0.03, 0.01, 0.5-paddle_height/2, 0)
     bounces.append(val)
     num += 1
-    total += val
 
+bounces = np.array(bounces)
+print(bounces)
 print("num: ", num)
-print("average: ", total/num)
+print("average: ", float(np.sum(bounces))/num)
 print("total time: " + str(time.time() - start_time) + " seconds")
