@@ -8,8 +8,8 @@ paddle_x = 1.0
 speed = 0.1
 action = [0.0, speed, -speed] # change in paddle y coordinate
 grid_size = 12.0
-num_iter = int(1e3) # number of iterations to train on, used for debugging
-terminal = int(grid_size * grid_size * 2 * 3 * 12 + 1)
+num_iter = int(1e5) # number of iterations to train on, used for debugging
+terminal = int(grid_size * grid_size * 2 * 3 * grid_size + 1)
 
 Q = np.zeros((terminal+5, 3)) # Q values
 N = np.zeros((terminal+5, 3), dtype=np.int) # N values
