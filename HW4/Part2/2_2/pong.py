@@ -10,7 +10,7 @@ oppact = [0,0, 0.02, -0.02] # change in paddle y coordinate for opponent
 grid_size = 12.0
 num_iter = int(1e3) # number of iterations to train on, used for debugging
 test_iter = int(1e3) # number iterations to test on
-terminal = int(math.pow(grid_size, 4) * 2 * 3 * + 1)
+terminal = int(math.pow(grid_size, 4)*2*3 + 1)
 
 Q = np.zeros((terminal+5, 3)) # Q values
 N = np.zeros((terminal+5, 3), dtype=np.int) # N values
@@ -46,6 +46,11 @@ def move(ball_x, ball_y, velocity_x, velocity_y, paddle_y, opp_y, act):
     ball_x += velocity_x
     ball_y += velocity_y
     paddle_y = min(max(0, paddle_y+action[act]), 1-paddle_height)
+    opp = 2
+    for i in xrange(2):
+        if math.fabs(opp_y + oppact[i] + paddle_height/2 - ball_y) <= math.fabs(opp_y + oppact[(i+1)%3] + paddle_height/2 - ball_y) and math.fabs(opp_y + oppact[i] + paddle_height/2 - ball_y) <= math.fabs(opp_y + oppact[(i+2)%3] + paddle_height/2 - ball_y): 
+            opp = i
+    opp_y += oppact[opp]
     bounce = 0
     if ball_y < 0:
         ball_y = -ball_y
@@ -72,7 +77,7 @@ def move(ball_x, ball_y, velocity_x, velocity_y, paddle_y, opp_y, act):
                 velocity_y = -1 if velocity_y < 0 else 1
         else:
             bounce = -1
-    return ball_x, ball_y, velocity_x, velocity_y, paddle_y, bounce
+    return ball_x, ball_y, velocity_x, velocity_y, paddle_y, opp_y, bounce
 
 
 def pong_game(ball_x, ball_y, velocity_x, velocity_y, paddle_y, opp_y, discrete):
