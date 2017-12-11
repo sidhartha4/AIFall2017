@@ -5,9 +5,10 @@ import numpy as np
 
 paddle_height = 0.2
 paddle_x = 1.0
-action = [0.0, 0.04, -0.04] # change in paddle y coordinate
+speed = 0.1
+action = [0.0, speed, -speed] # change in paddle y coordinate
 grid_size = 12.0
-num_iter = int(1e5) # number of iterations to train on, used for debugging
+num_iter = int(1e3) # number of iterations to train on, used for debugging
 terminal = int(grid_size * grid_size * 2 * 3 * 12 + 1)
 
 Q = np.zeros((terminal+5, 3)) # Q values
@@ -59,8 +60,8 @@ def move(ball_x, ball_y, velocity_x, velocity_y, paddle_y, act):
             velocity_x = -velocity_x + float(random.randrange(-15, 15))/1000.0
             velocity_y += float(random.randrange(-3, 3))/100.0
             bounce = 1
-            if math.fabs(velocity_x) < 0.03:
-                velocity_x = -0.03 if velocity_x < 0 else 0.03
+            if math.fabs(velocity_x) < speed-0.01:
+                velocity_x = -speed+0.01 if velocity_x < 0 else speed-0.01
             if math.fabs(velocity_x) > 1:
                 velocity_x = -1 if velocity_x < 0 else 1
             if math.fabs(velocity_y) > 1:
