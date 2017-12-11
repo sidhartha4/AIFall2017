@@ -8,14 +8,14 @@ paddle_x = 1.0
 action = [0.0, 0.04, -0.04] # change in paddle y coordinate
 oppact = [0,0, 0.02, -0.02] # change in paddle y coordinate for opponent
 grid_size = 12.0
-num_iter = int(1e3) # number of iterations to train on, used for debugging
+num_iter = int(1e5) # number of iterations to train on, used for debugging
 test_iter = int(1e3) # number iterations to test on
 terminal = int(math.pow(grid_size, 4)*2*3 + 1)
 
 Q = np.zeros((terminal+5, 3)) # Q values
 N = np.zeros((terminal+5, 3), dtype=np.int) # N values
 
-C = 50.0 # part of learning rate
+C = 120.0 # part of learning rate
 gamma = 0.75 # discount factor
 upto = 5 # try this many times for each
 maxr = 1e9 # reward for this
