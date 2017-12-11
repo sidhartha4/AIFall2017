@@ -13,8 +13,8 @@ terminal = int(grid_size * grid_size * 2 * 3 * 12 + 1)
 Q = np.zeros((terminal+5, 3)) # Q values
 N = np.zeros((terminal+5, 3), dtype=np.int) # N values
 
-C = 50.0 # part of learning rate
-gamma = 0.75 # discount factor
+C = 120.0 # part of learning rate
+gamma = 0.80 # discount factor
 upto = 5 # try this many times for each
 maxr = 1e9 # reward for this
 
