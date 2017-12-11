@@ -7,15 +7,15 @@ paddle_height = 0.2
 paddle_x = 1.0
 action = [0.0, 0.04, -0.04] # change in paddle y coordinate
 grid_size = 12.0
-num_iter = int(1e3) # number of iterations to train on, used for debugging
+num_iter = int(1e5) # number of iterations to train on, used for debugging
 terminal = int(grid_size * grid_size * 2 * 3 * 12 + 1)
 
 Q = np.zeros((terminal+5, 3)) # Q values
 N = np.zeros((terminal+5, 3), dtype=np.int) # N values
 
-C = 100.0 # part of learning rate
-gamma = 0.7 # discount factor
-upto = 5 # try this many times for each
+C = 120.0 # part of learning rate
+gamma = 1-1e-5 # discount factor
+upto = 4 # try this many times for each
 maxr = 1e9 # reward for this
 
 
@@ -31,9 +31,7 @@ def encode(ball_x, ball_y, velocity_x, velocity_y, paddle_y):
         discretev_y = 0
     else:
         discretev_y = 2
-    discrete_p = math.floor(grid_size * paddle_y / (1-paddle_height))
-    if paddle_y == 1-paddle_height:
-        discrete_p = grid_size-1
+    discrete_p = min(math.floor(grid_size * paddle_y / (1-paddle_height)), grid_size-1)
     discreteb_x, discreteb_y, discretev_x, discretev_y, discrete_p
     ball_state = discreteb_x * grid_size + discreteb_y
     velocity_state = discretev_x * 3 + discretev_y
@@ -73,8 +71,9 @@ def pong_game(ball_x, ball_y, velocity_x, velocity_y, paddle_y, discrete):
     cnt = 0
     arr = np.zeros(3, dtype = np.int)
     biject = encode(ball_x, ball_y, velocity_x, velocity_y, paddle_y)
+    pre = 0
     while ball_x <= paddle_x:
-        print biject, ball_x, ball_y, velocity_x, velocity_y, paddle_y
+        # print biject, ball_x, ball_y, velocity_x, velocity_y, paddle_y
         # get next action
         if discrete == 1:
             # compute exploration function value
@@ -94,8 +93,9 @@ def pong_game(ball_x, ball_y, velocity_x, velocity_y, paddle_y, discrete):
         if discrete == 1:
             # update number times visited and Q value
             N[biject][nxt_act] += 1
-            Q[biject][nxt_act] += C/(C+N[biject][nxt_act]) * (bounce + gamma * Q[new_bij].max() - Q[biject][nxt_act]);
+            Q[biject][nxt_act] += C/(C+N[biject][nxt_act]) * (pre + gamma * Q[new_bij].max() - Q[biject][nxt_act]);
         biject = new_bij
+        pre = bounce
         cnt += bounce
     return cnt
 
@@ -107,14 +107,14 @@ for i in xrange(3):
 train_bounces = []
 for i in xrange(num_iter):
     val = pong_game(0.5, 0.5, 0.03, 0.01, 0.5-paddle_height/2, 1)
-    print("Game number "+ str(i) + ": " + str(val))
+    # print("Game number "+ str(i) + ": " + str(val))
     train_bounces.append(val)
 train_bounces = np.array(train_bounces)
 np.set_printoptions(threshold = np.inf)
 print(train_bounces)
 print("max bounces: " + str(np.amax(train_bounces)))
 print("training avg: " + str(float(np.sum(train_bounces)) / num_iter))
-'''
+
 # check error on continuous case
 num = 0
 total = 0.0
@@ -126,8 +126,5 @@ for i in xrange(1000):
     total += val
 
 print("num: ", num)
-if num != 0:
-    print("average: ", total/num)
-
+print("average: ", total/num)
 print("total time: " + str(time.time() - start_time) + " seconds")
-'''
