@@ -13,9 +13,9 @@ terminal = int(grid_size * grid_size * 2 * 3 * 12 + 1)
 Q = np.zeros((terminal+5, 3)) # Q values
 N = np.zeros((terminal+5, 3), dtype=np.int) # N values
 
-C = 120.0 # part of learning rate
+C = 100.0 # part of learning rate
 gamma = 1-1e-5 # discount factor
-upto = 4 # try this many times for each
+upto = 5 # try this many times for each
 maxr = 1e9 # reward for this
 
 
@@ -53,17 +53,20 @@ def move(ball_x, ball_y, velocity_x, velocity_y, paddle_y, act):
     if ball_x < 0:
         ball_x = -ball_x
         velocity_x = -velocity_x
-    if ball_x > paddle_x and ball_y >= paddle_y and ball_y <= paddle_y+paddle_height:
-        ball_x = 2.0 - ball_x
-        velocity_x = -velocity_x + float(random.randrange(-15, 15))/1000.0
-        velocity_y += float(random.randrange(-3, 3))/100.0
-        bounce = 1
-        if math.fabs(velocity_x) < 0.03:
-            velocity_x = -0.03 if velocity_x < 0 else 0.03
-        if math.fabs(velocity_x) > 1:
-            velocity_x = -1 if velocity_x < 0 else 1
-        if math.fabs(velocity_y) > 1:
-            velocity_y = -1 if velocity_y < 0 else 1
+    if ball_x > paddle_x:
+        if ball_y >= paddle_y and ball_y <= paddle_y+paddle_height:
+            ball_x = 2.0 - ball_x
+            velocity_x = -velocity_x + float(random.randrange(-15, 15))/1000.0
+            velocity_y += float(random.randrange(-3, 3))/100.0
+            bounce = 1
+            if math.fabs(velocity_x) < 0.03:
+                velocity_x = -0.03 if velocity_x < 0 else 0.03
+            if math.fabs(velocity_x) > 1:
+                velocity_x = -1 if velocity_x < 0 else 1
+            if math.fabs(velocity_y) > 1:
+                velocity_y = -1 if velocity_y < 0 else 1
+        else:
+            bounce = -1
     return ball_x, ball_y, velocity_x, velocity_y, paddle_y, bounce
 
 
@@ -71,7 +74,6 @@ def pong_game(ball_x, ball_y, velocity_x, velocity_y, paddle_y, discrete):
     cnt = 0
     arr = np.zeros(3, dtype = np.int)
     biject = encode(ball_x, ball_y, velocity_x, velocity_y, paddle_y)
-    pre = 0
     while ball_x <= paddle_x:
         # print biject, ball_x, ball_y, velocity_x, velocity_y, paddle_y
         # get next action
@@ -93,10 +95,9 @@ def pong_game(ball_x, ball_y, velocity_x, velocity_y, paddle_y, discrete):
         if discrete == 1:
             # update number times visited and Q value
             N[biject][nxt_act] += 1
-            Q[biject][nxt_act] += C/(C+N[biject][nxt_act]) * (pre + gamma * Q[new_bij].max() - Q[biject][nxt_act]);
+            Q[biject][nxt_act] += C/(C+N[biject][nxt_act]) * (bounce + gamma * Q[new_bij].max() - Q[biject][nxt_act]);
         biject = new_bij
-        pre = bounce
-        cnt += bounce
+        cnt += max(bounce, 0)
     return cnt
 
 
