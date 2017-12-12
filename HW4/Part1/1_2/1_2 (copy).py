@@ -2,15 +2,13 @@ import numpy as np
 import pickle
 import time
 import json
-import matplotlib.pyplot as plt
 
 
 def getKNNOutput(x, trainX, trainY, k):
 
     dist = []
     for i in trainX:
-        #dist.append((np.sum(((x-i)**2)))**0.5)
-        dist.append(np.sum(abs(x-i)))
+        dist.append((np.sum(((x-i)**2)))**0.5)
 
     dist = np.array(dist)
     idx = dist.argsort()[:k]
@@ -72,19 +70,15 @@ def test(k):
     total = 0
     correct = 0
 
-    confusionMat = np.zeros((10,10))
-
     for x,y in zip(testX,testY):
         total += 1
         classified = getKNNOutput(x, trainX, trainY, k)
         if int(classified) == int(y):
             correct += 1
-        confusionMat[int(y)][int(classified)] += 1
 
-    acc = float(correct)/total
-    print("test accuracy:" + str(acc))
+    print("test accuracy:" + str(float(correct)/total))
 
-    return acc, confusionMat
+
 
 
 def convertToPickle(fileName):
@@ -147,72 +141,7 @@ def convertToPickle(fileName):
 
 
 
-def confusionMatrix(conf_arr):
-
-    norm_conf = []
-    for i in conf_arr:
-        a = 0
-        tmp_arr = []
-        a = sum(i, 0)
-        for j in i:
-            tmp_arr.append(round(float(j)/float(a),2))
-        norm_conf.append(tmp_arr)
-
-    fig = plt.figure()
-    plt.clf()
-    ax = fig.add_subplot(111)
-    ax.set_aspect(1)
-
-    #print(norm_conf)
-
-    res = ax.imshow(np.array(norm_conf), cmap=plt.cm.jet, 
-                    interpolation='nearest')
-
-    width, height = conf_arr.shape
-
-    for x in range(width):
-        for y in range(height):
-            ax.annotate(str(norm_conf[x][y]), xy=(y, x), 
-                        horizontalalignment='center',
-                        verticalalignment='center')
-
-    cb = fig.colorbar(res)
-    alphabet = '0123456789'
-    plt.xticks(range(width), alphabet[:width])
-    plt.yticks(range(height), alphabet[:height])
-    plt.savefig('confusion_matrix.png', format='png')
-
-
 if __name__ == "__main__":
-    
+    k = 3
     convertToPickle("../digitdata")
-
-
-    clust_data = np.zeros((10,2))
-
-    bestAcc = -1
-    bestCf = None
-    bestK = -1
-    for i in range(1,11):
-        print(i)
-        start_time = time.time()
-        acc, cf = test(i)
-        print("total time: " + str(time.time() - start_time) + " seconds")
-        clust_data[i-1][0] = i
-        clust_data[i-1][1] = acc
-
-        if acc > bestAcc:
-            bestAcc = acc
-            bestCf = cf
-            bestK = i
-
-    plt.plot(clust_data[:,0], clust_data[:,1], 'ro')
-    plt.axis([0.5, 10+0.5, 0, 1])
-    plt.show()
-
-
-    print(bestK)
-    print(bestAcc)
-    confusionMatrix(bestCf)
-
-
+    test(k)

@@ -2,17 +2,15 @@ import numpy as np
 import pickle
 import time
 import json
-import matplotlib.pyplot as plt
 
 no_epochs = 100
 mini_batch_size = 1
-learning_rate = 0.002
+learning_rate = 0.02
 
 
 def initializeLayer(input_size, output_size):
 
-    #W = np.random.uniform(-0.0714, 0.0714, size=(output_size, input_size))
-    W = np.zeros((output_size, input_size))
+    W = np.random.uniform(-0.0714, 0.0714, size=(output_size, input_size))
     b = np.zeros(output_size)
 
     return W, b
@@ -100,22 +98,18 @@ def prepareInput(name):
 
     return tX, tY 
 
-
-
 def train():
     
     trainX, trainY = prepareInput("trainPair.json")
 
     W, b = initializeLayer(784,10)
 
-    clust_data = np.zeros((no_epochs,2))
-
     for epoch in range(no_epochs):
         batches = int(float(trainX.shape[0])/float(mini_batch_size))
         
         for batch in range(batches):
-            #print("Epoch: ", (epoch+1),"/",no_epochs)
-            #print("Batch: ", (batch+1),"/",batches)
+            print("Epoch: ", (epoch+1),"/",no_epochs)
+            print("Batch: ", (batch+1),"/",batches)
 
             training_samplesX = trainX[batch*mini_batch_size:(batch+1)*mini_batch_size]
             training_samplesY = trainY[batch*mini_batch_size:(batch+1)*mini_batch_size]
@@ -130,61 +124,14 @@ def train():
                 W[int(training_samplesY[sample])] = W[int(training_samplesY[sample])]+(learning_rate)*del_W
                 b[int(training_samplesY[sample])] = b[int(training_samplesY[sample])] +(learning_rate)*del_b
 
-        dump_model(W,b)
-
-        print("Epoch: ", (epoch+1),"/",no_epochs)
-        acc = test("trainPair.json")
-        clust_data[epoch][0] = epoch+1
-        clust_data[epoch][1] = acc
-        acc = test("testPair.json")
 
     dump_model(W,b)
 
-    plt.plot(clust_data[:,0], clust_data[:,1], 'ro')
-    plt.axis([0.5, no_epochs+0.5, 0, 1])
-    plt.show()
 
 
-def confusionMatrix(conf_arr):
+def test():
 
-    norm_conf = []
-    for i in conf_arr:
-        a = 0
-        tmp_arr = []
-        a = sum(i, 0)
-        for j in i:
-            tmp_arr.append(round(float(j)/float(a),2))
-        norm_conf.append(tmp_arr)
-
-    fig = plt.figure()
-    plt.clf()
-    ax = fig.add_subplot(111)
-    ax.set_aspect(1)
-
-    #print(norm_conf)
-
-    res = ax.imshow(np.array(norm_conf), cmap=plt.cm.jet, 
-                    interpolation='nearest')
-
-    width, height = conf_arr.shape
-
-    for x in range(width):
-        for y in range(height):
-            ax.annotate(str(norm_conf[x][y]), xy=(y, x), 
-                        horizontalalignment='center',
-                        verticalalignment='center')
-
-    cb = fig.colorbar(res)
-    alphabet = '0123456789'
-    plt.xticks(range(width), alphabet[:width])
-    plt.yticks(range(height), alphabet[:height])
-    plt.savefig('confusion_matrix.png', format='png')
-
-
-
-def test(fileName, confusion_matrix=0):
-
-    testX, testY = prepareInput(fileName)
+    testX, testY = prepareInput("testPair.json")
     W,b = obtainTrainedModel()
 
     print(testX.shape)
@@ -192,21 +139,16 @@ def test(fileName, confusion_matrix=0):
     total = 0
     correct = 0
     
-    confusionMat = np.zeros((10,10))
 
     for x,y in zip(testX,testY):
         total += 1
         classified = getMLPOutput(x, W, b)
         if int(classified) == int(y):
             correct += 1
-        confusionMat[int(y)][int(classified)] += 1
 
-    if confusion_matrix == 1:
-        confusionMatrix(confusionMat)
-    acc = float(correct)/total
-    print("test accuracy:" + str(acc))
+    print("test accuracy:" + str(float(correct)/total))
 
-    return acc
+
 
 
 def convertToPickle(fileName):
@@ -273,4 +215,4 @@ if __name__ == "__main__":
     
     convertToPickle("../digitdata")
     train()
-    acc = test("testPair.json",1)
+    test()
